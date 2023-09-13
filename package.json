@@ -25,7 +25,9 @@
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile && npm run lint",
-    "lint": "eslint src --ext ts"
+    "lint": "npm run lint:eslint && npm run lint:prettier",
+    "lint:eslint": "eslint . --fix",
+    "lint:prettier": "npx prettier --plugin prettier-plugin-svelte --write ."
   },
   "devDependencies": {
     "@types/glob": "^8.1.0",
@@ -36,6 +38,7 @@
     "eslint": "^8.49.0",
     "glob": "^10.3.4",
     "prettier": "^3.0.3",
+    "prettier-plugin-svelte": "^3.0.3",
     "typescript": "^5.2.2",
     "vscode-test": "^1.5.0"
   },

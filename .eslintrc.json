@@ -9,10 +9,9 @@
   "rules": {
     "@typescript-eslint/naming-convention": "warn",
     "@typescript-eslint/semi": "warn",
-    "curly": "warn",
+    "curly": ["error", "multi"],
     "eqeqeq": "warn",
-    "no-throw-literal": "warn",
-    "semi": "off"
+    "no-throw-literal": "warn"
   },
-  "ignorePatterns": ["webview-ui/**"]
+  "ignorePatterns": ["webview-ui/public/build", "out"]
 }
