@@ -1,6 +1,6 @@
-import { Disposable, Webview, WebviewPanel, window, Uri, ViewColumn } from "vscode";
-import { getUri } from "../utilities/getUri";
-import { getNonce } from "../utilities/getNonce";
+import { Disposable, Webview, WebviewPanel, window, Uri, ViewColumn } from 'vscode';
+import { getUri } from '../utilities/getUri';
+import { getNonce } from '../utilities/getNonce';
 
 /**
  * This class manages the state and behavior of HelloWorld webview panels.
@@ -51,9 +51,9 @@ export class HelloWorldPanel {
       // If a webview panel does not already exist create and show a new one
       const panel = window.createWebviewPanel(
         // Panel view type
-        "showHelloWorld",
+        'showHelloWorld',
         // Panel title
-        "Hello World",
+        'Hello World',
         // The editor column the panel should be displayed in
         ViewColumn.One,
         // Extra panel configurations
@@ -61,8 +61,8 @@ export class HelloWorldPanel {
           // Enable JavaScript in the webview
           enableScripts: true,
           // Restrict the webview to only load resources from the `out` and `webview-ui/public/build` directories
-          localResourceRoots: [Uri.joinPath(extensionUri, "out"), Uri.joinPath(extensionUri, "webview-ui/public/build")],
-        }
+          localResourceRoots: [Uri.joinPath(extensionUri, 'out'), Uri.joinPath(extensionUri, 'webview-ui/public/build')],
+        },
       );
 
       HelloWorldPanel.currentPanel = new HelloWorldPanel(panel, extensionUri);
@@ -100,10 +100,10 @@ export class HelloWorldPanel {
    */
   private _getWebviewContent(webview: Webview, extensionUri: Uri) {
     // The CSS file from the Svelte build output
-    const stylesUri = getUri(webview, extensionUri, ["webview-ui", "public", "build", "bundle.css"]);
+    const stylesUri = getUri(webview, extensionUri, ['webview-ui', 'public', 'build', 'bundle.css']);
     // The JS file from the Svelte build output
-    const scriptUri = getUri(webview, extensionUri, ["webview-ui", "public", "build", "bundle.js"]);
-    
+    const scriptUri = getUri(webview, extensionUri, ['webview-ui', 'public', 'build', 'bundle.js']);
+
     const nonce = getNonce();
 
     // Tip: Install the es6-string-html VS Code extension to enable code highlighting below
@@ -138,7 +138,7 @@ export class HelloWorldPanel {
         const text = message.text;
 
         switch (command) {
-          case "hello":
+          case 'hello':
             // Code that should run in response to the hello message command
             window.showInformationMessage(text);
             return;
@@ -147,7 +147,7 @@ export class HelloWorldPanel {
         }
       },
       undefined,
-      this._disposables
+      this._disposables,
     );
   }
 }

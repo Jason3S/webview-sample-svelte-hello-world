@@ -9,6 +9,8 @@
 # production
 /build
 /dist
+/out
+/webview-ui/public/build
 
 # misc
 .DS_Store
