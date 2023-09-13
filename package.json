@@ -1,0 +1,45 @@
+{
+  "name": "hello-world-svelte",
+  "displayName": "hello-world-svelte",
+  "description": "A hello world sample extension to demonstrate using Svelte with the Webview UI Toolkit for VS Code.",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.75.0"
+  },
+  "type": "commonjs",
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "hello-world.showHelloWorld",
+        "title": "Hello World (Svelte): Show"
+      }
+    ]
+  },
+  "scripts": {
+    "install:all": "npm install && cd webview-ui && npm install",
+    "start:webview": "cd webview-ui && npm run dev",
+    "build:webview": "cd webview-ui && npm run build",
+    "build:all": "npm run compile && npm run build:webview",
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts"
+  },
+  "devDependencies": {
+    "@types/glob": "^8.1.0",
+    "@types/node": "^20.6.0",
+    "@types/vscode": "^1.82.0",
+    "@typescript-eslint/eslint-plugin": "^6.7.0",
+    "@typescript-eslint/parser": "^6.7.0",
+    "eslint": "^8.49.0",
+    "glob": "^10.3.4",
+    "prettier": "^3.0.3",
+    "typescript": "^5.2.2",
+    "vscode-test": "^1.5.0"
+  },
+  "dependencies": {
+    "@tsconfig/node18": "^18.2.2"
+  }
+}
