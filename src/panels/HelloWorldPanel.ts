@@ -1,6 +1,8 @@
 import { Disposable, Webview, WebviewPanel, window, Uri, ViewColumn } from 'vscode';
 import { getUri } from '../utilities/getUri';
 import { getNonce } from '../utilities/getNonce';
+import { createConnectionToWebview } from '../utilities/json-rpc';
+import { createApi } from '../api';
 
 /**
  * This class manages the state and behavior of HelloWorld webview panels.
@@ -25,6 +27,7 @@ export class HelloWorldPanel {
    */
   private constructor(panel: WebviewPanel, extensionUri: Uri) {
     this._panel = panel;
+    this._disposables.push(this._panel);
 
     // Set an event listener to listen for when the panel is disposed (i.e. when the user closes
     // the panel or when the panel is closed programmatically)
@@ -35,6 +38,12 @@ export class HelloWorldPanel {
 
     // Set an event listener to listen for messages passed from the webview context
     this._setWebviewMessageListener(this._panel.webview);
+
+    const rpc = createConnectionToWebview(panel.webview);
+
+    this._disposables.push(createApi(rpc));
+    rpc.listen();
+    this._disposables.push(rpc);
   }
 
   /**
@@ -47,36 +56,39 @@ export class HelloWorldPanel {
     if (HelloWorldPanel.currentPanel) {
       // If the webview panel already exists reveal it
       HelloWorldPanel.currentPanel._panel.reveal(ViewColumn.One);
-    } else {
-      // If a webview panel does not already exist create and show a new one
-      const panel = window.createWebviewPanel(
-        // Panel view type
-        'showHelloWorld',
-        // Panel title
-        'Hello World',
-        // The editor column the panel should be displayed in
-        ViewColumn.One,
-        // Extra panel configurations
-        {
-          // Enable JavaScript in the webview
-          enableScripts: true,
-          // Restrict the webview to only load resources from the `out` and `webview-ui/public/build` directories
-          localResourceRoots: [Uri.joinPath(extensionUri, 'out'), Uri.joinPath(extensionUri, 'webview-ui/public/build')],
-        },
-      );
-
-      HelloWorldPanel.currentPanel = new HelloWorldPanel(panel, extensionUri);
+      return;
     }
+
+    // If a webview panel does not already exist create and show a new one
+    const panel = window.createWebviewPanel(
+      // Panel view type
+      'showHelloWorld',
+      // Panel title
+      'Hello World',
+      // The editor column the panel should be displayed in
+      ViewColumn.One,
+      // Extra panel configurations
+      {
+        // Enable JavaScript in the webview
+        enableScripts: true,
+        // Restrict the webview to only load resources from the `out` and `webview-ui/public/build` directories
+        localResourceRoots: [Uri.joinPath(extensionUri, 'out'), Uri.joinPath(extensionUri, 'webview-ui/public/build')],
+      },
+    );
+
+    HelloWorldPanel.currentPanel = new HelloWorldPanel(panel, extensionUri);
   }
 
   /**
    * Cleans up and disposes of webview resources when the webview panel is closed.
    */
   public dispose() {
-    HelloWorldPanel.currentPanel = undefined;
+    if (HelloWorldPanel.currentPanel === this) {
+      HelloWorldPanel.currentPanel = undefined;
+    }
 
     // Dispose of the current webview panel
-    this._panel.dispose();
+    // this._panel.dispose() is the first element on the list.;
 
     // Dispose of all disposables (i.e. commands) for the current webview panel
     while (this._disposables.length) {
@@ -126,7 +138,7 @@ export class HelloWorldPanel {
 
   /**
    * Sets up an event listener to listen for messages passed from the webview context and
-   * executes code based on the message that is recieved.
+   * executes code based on the message that is received.
    *
    * @param webview A reference to the extension webview
    * @param context A reference to the extension context
@@ -134,6 +146,7 @@ export class HelloWorldPanel {
   private _setWebviewMessageListener(webview: Webview) {
     webview.onDidReceiveMessage(
       (message: any) => {
+        console.log('%o', message);
         const command = message.command;
         const text = message.text;
 

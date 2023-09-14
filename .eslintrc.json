@@ -9,7 +9,7 @@
   "rules": {
     "@typescript-eslint/naming-convention": "warn",
     "@typescript-eslint/semi": "warn",
-    "curly": ["error", "multi"],
+    "curly": ["error", "multi-line"],
     "eqeqeq": "warn",
     "no-throw-literal": "warn"
   },

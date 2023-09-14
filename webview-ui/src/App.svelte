@@ -1,6 +1,7 @@
 <script lang="ts">
   import { provideVSCodeDesignSystem, vsCodeButton } from '@vscode/webview-ui-toolkit';
   import { vscode } from './utilities/vscode';
+  import { getClientApi } from './api';
 
   // In order to use the Webview UI Toolkit web components they
   // must be registered with the browser (i.e. webview) using the
@@ -29,11 +30,17 @@
       text: 'Hey there partner! 🤠',
     });
   }
+
+  function handleHowdyClick2() {
+    const api = getClientApi();
+    api.showInformationMessage('Hey There.');
+  }
 </script>
 
 <main>
   <h1>Hello {name}!</h1>
   <vscode-button on:click={handleHowdyClick}>Howdy!</vscode-button>
+  <vscode-button on:click={handleHowdyClick2}>Send Message: Howdy!</vscode-button>
 </main>
 
 <style>

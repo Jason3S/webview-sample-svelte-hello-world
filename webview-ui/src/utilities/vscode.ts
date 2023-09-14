@@ -1,5 +1,19 @@
 import type { WebviewApi } from 'vscode-webview';
 
+interface Disposable {
+  dispose: () => void;
+}
+
+export interface VSCodeMessageAPI {
+  postMessage(message: unknown): void;
+  onDidReceiveMessage(listener: (message: any) => void | Promise<void>): Disposable;
+}
+
+export interface VSCodeAPI<T> extends VSCodeMessageAPI {
+  getState(): T | undefined;
+  setState(state: T): T;
+}
+
 /**
  * A utility wrapper around the acquireVsCodeApi() function, which enables
  * message passing and state management between the webview and extension
@@ -9,8 +23,8 @@ import type { WebviewApi } from 'vscode-webview';
  * dev server by using native web browser features that mock the functionality
  * enabled by acquireVsCodeApi.
  */
-class VSCodeAPIWrapper {
-  private readonly vsCodeApi: WebviewApi<unknown> | undefined;
+class VSCodeAPIWrapper<T = unknown> implements VSCodeAPI<T> {
+  private readonly vsCodeApi: WebviewApi<T> | undefined;
 
   constructor() {
     // Check if the acquireVsCodeApi function exists in the current development
@@ -26,7 +40,7 @@ class VSCodeAPIWrapper {
    * @remarks When running webview code inside a web browser, postMessage will instead
    * log the given message to the console.
    *
-   * @param message Abitrary data (must be JSON serializable) to send to the extension context.
+   * @param message Arbitrary data (must be JSON serializable) to send to the extension context.
    */
   public postMessage(message: unknown) {
     if (this.vsCodeApi) {
@@ -44,7 +58,7 @@ class VSCodeAPIWrapper {
    *
    * @return The current state or `undefined` if no state has been set.
    */
-  public getState(): unknown | undefined {
+  public getState(): T | undefined {
     if (this.vsCodeApi) {
       return this.vsCodeApi.getState();
     } else {
@@ -64,13 +78,18 @@ class VSCodeAPIWrapper {
    *
    * @return The new state.
    */
-  public setState<T extends unknown | undefined>(newState: T): T {
+  public setState(newState: T): T {
     if (this.vsCodeApi) {
       return this.vsCodeApi.setState(newState);
     } else {
       localStorage.setItem('vscodeState', JSON.stringify(newState));
       return newState;
     }
+  }
+
+  public onDidReceiveMessage(listener: (message: any) => void | Promise<void>): Disposable {
+    window.addEventListener('message', listener);
+    return { dispose: () => window.removeEventListener('message', listener) };
   }
 }
 
