@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "tsBuildInfoFile": "out/root/tsconfig.tsbuildinfo",
     "incremental": true,
     "composite": true
   },
