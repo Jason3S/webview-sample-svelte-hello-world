@@ -1,13 +1,13 @@
 import { Webview } from 'vscode';
 import {
-  createMessageConnection,
   AbstractMessageReader,
   AbstractMessageWriter,
+  MessageConnection,
+  createMessageConnection,
   type DataCallback,
   type Disposable,
   type Message,
   type MessageWriter,
-  MessageConnection,
 } from 'vscode-jsonrpc/lib/common/api';
 
 export class WebViewMessageReader extends AbstractMessageReader {
@@ -53,3 +53,5 @@ export class WebViewMessageWriter extends AbstractMessageWriter implements Messa
 export function createConnectionToWebview(webview: Webview): MessageConnection {
   return createMessageConnection(new WebViewMessageReader(webview), new WebViewMessageWriter(webview));
 }
+
+/*************************************** */

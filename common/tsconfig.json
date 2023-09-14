@@ -1,0 +1,12 @@
+{
+  "extends": "@tsconfig/node18",
+  "compilerOptions": {
+    "composite": true,
+    "outDir": "../out/common",
+    "lib": ["es2022", "dom"],
+    "sourceMap": true,
+    "rootDir": ".",
+    "strict": true
+  },
+  "include": ["."]
+}

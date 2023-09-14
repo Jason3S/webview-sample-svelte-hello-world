@@ -1,12 +1,8 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
-    "target": "ES2022",
-    "outDir": "out",
-    "lib": ["es2022", "dom"],
-    "sourceMap": true,
-    "rootDir": "src",
-    "strict": true
+    "incremental": true,
+    "composite": true
   },
-  "exclude": ["node_modules", ".vscode-test", "webview-ui"]
+  "files": [],
+  "references": [{ "path": "./extension/" }, { "path": "./common" }]
 }
