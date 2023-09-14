@@ -8,7 +8,7 @@ import {
   type Disposable,
   type Message,
   type MessageWriter,
-} from 'vscode-jsonrpc/lib/common/api';
+} from 'vscode-jsonrpc/node';
 
 export class WebViewMessageReader extends AbstractMessageReader {
   constructor(readonly webview: Webview) {

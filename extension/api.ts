@@ -1,21 +1,14 @@
-import { NotificationType, type MessageConnection, RequestType } from 'vscode-jsonrpc/node';
-import { window, Disposable } from 'vscode';
-import { RpcAPI, createServerApi } from './utilities/json-rpc-api';
+import { window } from 'vscode';
+import { type MessageConnection } from 'vscode-jsonrpc/node';
+import { HelloWorldAPI, ServerSideApi, createServerSideHelloWorldApi } from '../common/api';
 
-interface Api extends Disposable {}
-
-export interface ServerAPI extends RpcAPI {
-  serverRequests: {};
-  serverNotifications: {
-    showInformationMessage(message: string): Promise<void>;
-  };
-  clientRequests: {};
-  clientNotifications: {};
-}
-
-export function createApi(connection: MessageConnection): Api {
-  const api: ServerAPI = {
-    serverRequests: {},
+export function createApi(connection: MessageConnection): ServerSideApi {
+  const api: HelloWorldAPI = {
+    serverRequests: {
+      async whatTimeIsIt() {
+        return new Date().toString();
+      },
+    },
     serverNotifications: {
       async showInformationMessage(message) {
         await window.showInformationMessage('Show Message: ' + message);
@@ -25,5 +18,5 @@ export function createApi(connection: MessageConnection): Api {
     clientNotifications: {},
   };
 
-  return createServerApi(connection, api);
+  return createServerSideHelloWorldApi(connection, api);
 }

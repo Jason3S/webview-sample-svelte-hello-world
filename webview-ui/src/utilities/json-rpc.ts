@@ -7,7 +7,7 @@ import {
   type Message,
   type MessageConnection,
   type MessageWriter,
-} from 'vscode-jsonrpc/lib/common/api';
+} from 'vscode-jsonrpc/browser';
 import { vscode, type VSCodeMessageAPI } from './vscode';
 
 export { NotificationType } from 'vscode-jsonrpc/lib/common/api';
@@ -18,7 +18,11 @@ export class WebViewMessageReader extends AbstractMessageReader {
   }
 
   listen(callback: DataCallback): Disposable {
-    return this.api.onDidReceiveMessage(callback);
+    return this.api.onDidReceiveMessage((data) => {
+      if (!data || !data.data) return;
+      console.log('client listen: %o', data.data);
+      callback(data.data);
+    });
   }
 }
 

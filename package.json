@@ -7,7 +7,7 @@
     "vscode": "^1.75.0"
   },
   "type": "commonjs",
-  "main": "./out/extension.js",
+  "main": "./out/extension/extension.js",
   "contributes": {
     "commands": [
       {
@@ -21,9 +21,10 @@
     "start:webview": "cd webview-ui && npm run dev",
     "build:webview": "cd webview-ui && npm run build",
     "build:all": "npm run compile && npm run build:webview",
+    "build": "npm run compile",
     "vscode:prepublish": "npm run compile",
-    "compile": "tsc -b ./",
-    "watch": "tsc -watch -p ./",
+    "compile": "tsc -b .",
+    "watch": "tsc -b . --watch",
     "pretest": "npm run compile && npm run lint",
     "lint": "npm run lint:eslint && npm run lint:prettier",
     "lint:eslint": "eslint . --fix",

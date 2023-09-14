@@ -1,6 +1,7 @@
 {
   "extends": "@tsconfig/node18",
   "compilerOptions": {
+    "composite": true,
     "outDir": "../out/extension",
     "lib": ["es2022", "dom"],
     "sourceMap": true,

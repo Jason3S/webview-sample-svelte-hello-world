@@ -4,10 +4,10 @@
     "ignoreDeprecations": "5.0",
     "sourceMap": true,
     "strict": true,
-    "rootDir": "./src",
-    "outDir": "../out/webview_ui"
+    "rootDir": "..",
+    "outDir": "out"
   },
-
-  "include": ["src"],
+  // "references": [{ "path": "../common" }],
+  "include": ["src", "../common"],
   "exclude": ["node_modules/*", "__sapper__/*", "public/*"]
 }

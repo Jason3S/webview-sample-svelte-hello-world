@@ -1,28 +1,28 @@
-import { NotificationType, getRpcConnection } from './utilities/json-rpc';
+import { createClientSideHelloWorldApi, type ClientSideApi } from '../../common/api.js';
+import { getRpcConnection } from './utilities/json-rpc';
 
-export interface ClientApi {
-  showInformationMessage(message: string): Promise<void>;
-}
-
-function createApi(): ClientApi {
+function createApi(): ClientSideApi {
   const connection = getRpcConnection();
 
-  const tShowInformationMessage = new NotificationType<string>('showInformationMessage');
-
-  async function showInformationMessage(message: string): Promise<void> {
-    await connection.sendNotification(tShowInformationMessage, message);
-  }
+  const api = createClientSideHelloWorldApi(connection, {
+    serverNotifications: {
+      showInformationMessage: undefined,
+    },
+    serverRequests: {
+      whatTimeIsIt: undefined,
+    },
+    clientNotifications: {},
+    clientRequests: {},
+  });
 
   connection.listen();
 
-  return {
-    showInformationMessage,
-  };
+  return api;
 }
 
-let _api: ClientApi | undefined;
+let _api: ClientSideApi | undefined;
 
-export function getClientApi(): ClientApi {
+export function getClientApi(): ClientSideApi {
   if (_api) return _api;
   _api = createApi();
   return _api;

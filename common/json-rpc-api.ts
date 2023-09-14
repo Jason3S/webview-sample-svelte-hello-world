@@ -1,4 +1,6 @@
-import { MessageConnection, NotificationType, RequestType, type Disposable } from 'vscode-jsonrpc/lib/common/api';
+import { type MessageConnection, NotificationType, RequestType, type Disposable } from 'vscode-jsonrpc/lib/common/api';
+
+export type { Disposable } from 'vscode-jsonrpc/lib/common/api';
 
 export const apiPrefix = {
   serverRequest: 'sr_',
@@ -35,19 +37,35 @@ type StrictRequired<T> = {
   [P in keyof T]-?: Exclude<T[P], undefined>;
 };
 
-type ClientMethods<T extends ClientSideAPI> = {
-  clientRequest: StrictRequired<T['clientRequests']>;
-  clientNotification: StrictRequired<T['clientNotifications']>;
-};
+type ClientRequests<A extends ClientSideAPI> = A['clientRequests'];
+type ClientNotifications<A extends ClientSideAPI> = A['clientNotifications'];
+type ServerRequests<A extends ServerSideAPI> = A['serverRequests'];
+type ServerNotifications<A extends ServerSideAPI> = A['serverNotifications'];
 
-export function createServerApi<A extends RpcAPI>(connection: MessageConnection, api: A): ClientMethods<A> & Disposable {
+export type ClientMethods<T extends ClientSideAPI> = {
+  clientRequest: StrictRequired<ClientRequests<T>>;
+  clientNotification: StrictRequired<ClientNotifications<T>>;
+} & Disposable;
+
+export type ServerMethods<T extends ServerSideAPI> = {
+  serverRequest: StrictRequired<ServerRequests<T>>;
+  serverNotification: StrictRequired<ServerNotifications<T>>;
+} & Disposable;
+
+/**
+ * Create an API Interface that can be used on the Server
+ * @param connection
+ * @param api - the api structure. Provide functions to handle server requests.
+ * @returns
+ */
+export function createServerApi<A extends RpcAPI>(connection: MessageConnection, api: A): ClientMethods<A> {
   const _disposables: Disposable[] = [];
 
   bindRequests(connection, apiPrefix.serverRequest, api.serverRequests, _disposables);
   bindNotifications(connection, apiPrefix.serverNotification, api.serverNotifications, _disposables);
 
-  type CR = A['clientRequests'];
-  type CN = A['clientNotifications'];
+  type CR = ClientRequests<A>;
+  type CN = ClientNotifications<A>;
 
   const clientRequest = mapRequestsToFn<CR>(connection, apiPrefix.clientRequest, api.clientRequests);
   const clientNotification = mapNotificationsToFn<CN>(connection, apiPrefix.clientNotification, api.clientNotifications);
@@ -68,8 +86,43 @@ export function createServerApi<A extends RpcAPI>(connection: MessageConnection,
   };
 }
 
+/**
+ * Create an API Interface that can be used on the Client
+ * @param connection
+ * @param api - the api structure. Provide functions to handle client requests.
+ * @returns
+ */
+export function createClientApi<A extends RpcAPI>(connection: MessageConnection, api: A): ServerMethods<A> {
+  const _disposables: Disposable[] = [];
+
+  bindRequests(connection, apiPrefix.clientRequest, api.clientRequests, _disposables);
+  bindNotifications(connection, apiPrefix.clientNotification, api.clientNotifications, _disposables);
+
+  type SR = ServerRequests<A>;
+  type SN = ServerNotifications<A>;
+
+  const serverRequest = mapRequestsToFn<SR>(connection, apiPrefix.serverRequest, api.serverRequests);
+  const serverNotification = mapNotificationsToFn<SN>(connection, apiPrefix.serverNotification, api.serverNotifications);
+
+  function dispose() {
+    while (_disposables.length) {
+      const disposable = _disposables.pop();
+      if (disposable) {
+        disposable.dispose();
+      }
+    }
+  }
+
+  return {
+    serverRequest,
+    serverNotification,
+    dispose,
+  };
+}
+
 function bindRequests(connection: MessageConnection, prefix: string, requests: Requests, disposables: Disposable[]) {
   for (const [name, fn] of Object.entries(requests)) {
+    console.log('bindRequest %o', { name, fn: typeof fn });
     if (!fn) continue;
     const tReq = new RequestType(prefix + name);
 
@@ -79,6 +132,7 @@ function bindRequests(connection: MessageConnection, prefix: string, requests: R
 
 function bindNotifications(connection: MessageConnection, prefix: string, requests: Notifications, disposables: Disposable[]) {
   for (const [name, fn] of Object.entries(requests)) {
+    console.log('bindNotifications %o', { name, fn: typeof fn });
     if (!fn) continue;
     const tNote = new NotificationType(prefix + name);
 
