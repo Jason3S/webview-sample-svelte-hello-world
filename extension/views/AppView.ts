@@ -94,7 +94,12 @@ export class AppView {
           <title>Hello World</title>
           <meta charset="UTF-8" />
           <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-          <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'nonce-${nonce}'; script-src 'nonce-${nonce}';">
+          <meta http-equiv="Content-Security-Policy" content="
+            default-src 'none';
+            style-src 'nonce-${nonce}';
+            style-src-elem 'nonce-${nonce}';
+            script-src 'nonce-${nonce}';
+          ">
           <meta property="csp-nonce" content="${nonce}" />
           <meta property="view-name" content="${viewName}" />
           <link rel="stylesheet" type="text/css" nonce="${nonce}" href="${stylesUri}">
