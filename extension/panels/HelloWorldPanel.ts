@@ -1,8 +1,5 @@
-import { Disposable, Webview, WebviewPanel, window, Uri, ViewColumn } from 'vscode';
-import { getUri } from '../utilities/getUri';
-import { getNonce } from '../utilities/getNonce';
-import { createConnectionToWebview } from '../utilities/json-rpc';
-import { createApi } from '../api';
+import { Disposable, Uri, ViewColumn, WebviewPanel, window } from 'vscode';
+import { HelloWorldView } from '../views/HelloWorldView';
 
 /**
  * This class manages the state and behavior of HelloWorld webview panels.
@@ -33,17 +30,7 @@ export class HelloWorldPanel {
     // the panel or when the panel is closed programmatically)
     this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
 
-    // Set the HTML content for the webview panel
-    this._panel.webview.html = this._getWebviewContent(this._panel.webview, extensionUri);
-
-    // Set an event listener to listen for messages passed from the webview context
-    this._setWebviewMessageListener(this._panel.webview);
-
-    const rpc = createConnectionToWebview(panel.webview);
-
-    this._disposables.push(createApi(rpc));
-    rpc.listen();
-    this._disposables.push(rpc);
+    this._disposables.push(HelloWorldView.bindView(this._panel.webview, extensionUri));
   }
 
   /**
@@ -68,12 +55,7 @@ export class HelloWorldPanel {
       // The editor column the panel should be displayed in
       ViewColumn.One,
       // Extra panel configurations
-      {
-        // Enable JavaScript in the webview
-        enableScripts: true,
-        // Restrict the webview to only load resources from the `out` and `webview-ui/public/build` directories
-        localResourceRoots: [Uri.joinPath(extensionUri, 'out'), Uri.joinPath(extensionUri, 'webview-ui/public/build')],
-      },
+      {}, // set later
     );
 
     HelloWorldPanel.currentPanel = new HelloWorldPanel(panel, extensionUri);
@@ -97,71 +79,5 @@ export class HelloWorldPanel {
         disposable.dispose();
       }
     }
-  }
-
-  /**
-   * Defines and returns the HTML that should be rendered within the webview panel.
-   *
-   * @remarks This is also the place where references to the Svelte webview build files
-   * are created and inserted into the webview HTML.
-   *
-   * @param webview A reference to the extension webview
-   * @param extensionUri The URI of the directory containing the extension
-   * @returns A template string literal containing the HTML that should be
-   * rendered within the webview panel
-   */
-  private _getWebviewContent(webview: Webview, extensionUri: Uri) {
-    // The CSS file from the Svelte build output
-    const stylesUri = getUri(webview, extensionUri, ['webview-ui', 'public', 'build', 'bundle.css']);
-    // The JS file from the Svelte build output
-    const scriptUri = getUri(webview, extensionUri, ['webview-ui', 'public', 'build', 'bundle.js']);
-
-    const nonce = getNonce();
-
-    // Tip: Install the es6-string-html VS Code extension to enable code highlighting below
-    return /*html*/ `
-      <!DOCTYPE html>
-      <html lang="en">
-        <head>
-          <title>Hello World</title>
-          <meta charset="UTF-8" />
-          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-          <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'nonce-${nonce}'; script-src 'nonce-${nonce}';">
-          <meta property="csp-nonce" content="${nonce}" />
-          <link rel="stylesheet" type="text/css" nonce="${nonce}" href="${stylesUri}">
-          <script defer nonce="${nonce}" src="${scriptUri}"></script>
-        </head>
-        <body>
-        </body>
-      </html>
-    `;
-  }
-
-  /**
-   * Sets up an event listener to listen for messages passed from the webview context and
-   * executes code based on the message that is received.
-   *
-   * @param webview A reference to the extension webview
-   * @param context A reference to the extension context
-   */
-  private _setWebviewMessageListener(webview: Webview) {
-    webview.onDidReceiveMessage(
-      (message: any) => {
-        console.log('%o', message);
-        const command = message.command;
-        const text = message.text;
-
-        switch (command) {
-          case 'hello':
-            // Code that should run in response to the hello message command
-            window.showInformationMessage(text);
-            return;
-          // Add more switch case statements here as more webview message commands
-          // are created within the webview context (i.e. inside media/main.js)
-        }
-      },
-      undefined,
-      this._disposables,
-    );
   }
 }

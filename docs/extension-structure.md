@@ -25,9 +25,9 @@ This directory will typically contain individual TypeScript or JavaScript files 
 - Setting the initial HTML markdown of the webview panel
 - Other custom logic and behavior related to webview panel management
 
-As the name might suggest, the `utilties` directory contains all of the extension utility functions that make setting up and managing an extension easier. In this case, it contains `getUri.ts` which contains a helper function which will get the webview URI of a given file or resource.
+As the name might suggest, the `utilities` directory contains all of the extension utility functions that make setting up and managing an extension easier. In this case, it contains `getUri.ts` which contains a helper function which will get the webview URI of a given file or resource.
 
-Finally, `extension.ts` is where all the logic for activating and deactiving the extension usually live. This is also the place where extension commands are registered.
+Finally, `extension.ts` is where all the logic for activating and deactivating the extension usually live. This is also the place where extension commands are registered.
 
 ## `webview-ui` directory
 

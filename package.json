@@ -9,9 +9,31 @@
   "type": "commonjs",
   "main": "./out/extension/extension.js",
   "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "hello-world-todo-explorer",
+          "title": "Todo Example",
+          "icon": "resources/todo-list.svg"
+        }
+      ]
+    },
+    "views": {
+      "hello-world-todo-explorer": [
+        {
+          "id": "hello-world-svelte.todoTreeView",
+          "name": "Todo Tree View"
+        },
+        {
+          "type": "webview",
+          "id": "calicoColors.colorsView",
+          "name": "Todo Webview"
+        }
+      ]
+    },
     "commands": [
       {
-        "command": "hello-world.showHelloWorld",
+        "command": "hello-world-svelte.showHelloWorld",
         "title": "Hello World (Svelte): Show"
       }
     ]

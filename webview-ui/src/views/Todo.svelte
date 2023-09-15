@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { Checkbox } from '@vscode/webview-ui-toolkit';
-  import type { ChangeEventHandler, FormEventHandler } from 'svelte/elements';
+  import type { ChangeEventHandler } from 'svelte/elements';
 
   let todos = [
     { done: false, text: 'finish Svelte tutorial' },
