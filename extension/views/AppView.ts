@@ -1,8 +1,8 @@
-import { Disposable, Webview, WebviewPanel, window, Uri, ViewColumn, WebviewOptions } from 'vscode';
-import { getUri } from '../utilities/getUri';
-import { getNonce } from '../utilities/getNonce';
-import { createConnectionToWebview } from '../utilities/json-rpc';
+import { Disposable, Uri, Webview, WebviewOptions } from 'vscode';
 import { createApi } from '../api';
+import { getNonce } from '../utilities/getNonce';
+import { getUri } from '../utilities/getUri';
+import { createConnectionToWebview } from '../utilities/json-rpc';
 
 /**
  * This class manages the state and behavior of HelloWorld webview panels.

@@ -21,6 +21,21 @@
       </li>
     </ul>
   </div>
+
+  <vscode-text-field>
+    Text Field Label
+    <section slot="end" style="display:flex; align-items: center;">
+      <vscode-button appearance="icon" aria-label="Match Case">
+        <span class="codicon codicon-case-sensitive"></span>
+      </vscode-button>
+      <vscode-button appearance="icon" aria-label="Match Whole Word">
+        <span class="codicon codicon-whole-word"></span>
+      </vscode-button>
+      <vscode-button appearance="icon" aria-label="Use Regular Expression">
+        <span class="codicon codicon-regex"></span>
+      </vscode-button>
+    </section>
+  </vscode-text-field>
 </div>
 
 <style>

@@ -2,7 +2,7 @@ import { CancellationToken, Uri, WebviewView, WebviewViewProvider, WebviewViewRe
 import { TodoView } from '../views/TodoView';
 
 export class TodoViewProvider implements WebviewViewProvider {
-  public static readonly viewType = 'calicoColors.colorsView';
+  public static readonly viewType = 'hello-world-svelte.todoView';
 
   private _view?: WebviewView;
 

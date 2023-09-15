@@ -1,4 +1,5 @@
 import type { WebviewApi } from 'vscode-webview';
+import type { AppState } from '../types';
 
 interface Disposable {
   dispose: () => void;
@@ -23,7 +24,7 @@ export interface VSCodeAPI<T> extends VSCodeMessageAPI {
  * dev server by using native web browser features that mock the functionality
  * enabled by acquireVsCodeApi.
  */
-class VSCodeAPIWrapper<T = unknown> implements VSCodeAPI<T> {
+class VSCodeAPIWrapper<T = AppState> implements VSCodeAPI<T> {
   private readonly vsCodeApi: WebviewApi<T> | undefined;
 
   constructor() {

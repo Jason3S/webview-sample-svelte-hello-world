@@ -21,12 +21,8 @@
     "views": {
       "hello-world-todo-explorer": [
         {
-          "id": "hello-world-svelte.todoTreeView",
-          "name": "Todo Tree View"
-        },
-        {
           "type": "webview",
-          "id": "calicoColors.colorsView",
+          "id": "hello-world-svelte.todoView",
           "name": "Todo Webview"
         }
       ]

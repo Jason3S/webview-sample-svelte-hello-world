@@ -1,5 +1,6 @@
 <script lang="ts">
   import { getClientApi } from '../api';
+  import VsCodeComponents from './VSCodeComponents.svelte';
 
   export let name: string;
 
@@ -32,6 +33,8 @@
       <li>{msg}</li>
     {/each}
   </ul>
+
+  <VsCodeComponents></VsCodeComponents>
 </div>
 
 <style>
