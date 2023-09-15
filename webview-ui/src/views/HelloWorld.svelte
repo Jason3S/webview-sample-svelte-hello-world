@@ -2,6 +2,7 @@
   import { getClientApi } from '../api';
   import VsCodeComponents from './VSCodeComponents.svelte';
 
+  export let showVsCodeComponents = false;
   export let name: string;
 
   let messages: string[] = [];
@@ -34,7 +35,9 @@
     {/each}
   </ul>
 
-  <VsCodeComponents></VsCodeComponents>
+  {#if showVsCodeComponents}
+    <VsCodeComponents></VsCodeComponents>
+  {/if}
 </div>
 
 <style>
