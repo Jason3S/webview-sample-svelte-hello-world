@@ -57,6 +57,7 @@
     {#each todos as todo}
       <li class:done={todo.done}>
         <vscode-text-field
+          class="todo-item"
           type="text"
           placeholder="What needs to be done?"
           value={todo.text}
@@ -73,14 +74,16 @@
 
   <p>{remaining} remaining</p>
 
-  <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-static-element-interactions -->
-  <vscode-button on:click={add}> Add new </vscode-button>
+  <div class="todo-actions">
+    <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-static-element-interactions -->
+    <vscode-button on:click={add}> Add New </vscode-button>
 
-  <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-static-element-interactions -->
-  <vscode-button on:click={clear}> Clear completed </vscode-button>
+    <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-static-element-interactions -->
+    <vscode-button on:click={clear}> Clear Completed </vscode-button>
 
-  <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-static-element-interactions -->
-  <vscode-button on:click={reset}> Reset the list </vscode-button>
+    <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-static-element-interactions -->
+    <vscode-button on:click={reset}> Reset the List </vscode-button>
+  </div>
 </div>
 
 <style>
@@ -90,6 +93,27 @@
 
   li {
     display: flex;
+  }
+
+  .todos {
+    padding-inline-start: 0;
+    width: 100%;
+  }
+
+  .todo-actions {
+    width: 100%;
+  }
+
+  .todo-actions > vscode-button {
+    display: block;
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .todo-item {
+    width: 100%;
   }
 
   /* input[type='text'] {

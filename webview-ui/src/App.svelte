@@ -28,13 +28,15 @@
 </script>
 
 <main>
-  {#if view == 'hello-world'}
-    <HelloWorld {name} />
-  {:else if view == 'todo'}
-    <Todo></Todo>
-  {:else}
-    <h1>Unknown View {view}</h1>
-  {/if}
+  <div class="main-container">
+    {#if view == 'hello-world'}
+      <HelloWorld {name} />
+    {:else if view == 'todo'}
+      <Todo></Todo>
+    {:else}
+      <h1>Unknown View {view}</h1>
+    {/if}
+  </div>
 </main>
 
 <style>
@@ -44,5 +46,9 @@
     justify-content: left;
     align-items: flex-start;
     height: 100%;
+  }
+
+  .main-container {
+    width: 100%;
   }
 </style>
