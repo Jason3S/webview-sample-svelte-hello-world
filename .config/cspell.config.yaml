@@ -1,5 +1,6 @@
 words:
   - arrowParens
+  - degit
   - iife
   - todos
   - tsbuildinfo

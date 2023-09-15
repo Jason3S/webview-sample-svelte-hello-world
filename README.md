@@ -1,8 +1,18 @@
 # Hello World (Svelte)
 
-This is an implementation of the default [Hello World](https://github.com/microsoft/vscode-webview-ui-toolkit-samples/tree/main/default/hello-world) sample extension that demonstrates how to set up and use a [Svelte](https://svelte.dev/) + [Webview UI Toolkit](https://github.com/microsoft/vscode-webview-ui-toolkit) webview extension.
+This is a spin off of [Hello World Svelte](https://github.com/microsoft/vscode-webview-ui-toolkit-samples/tree/main/frameworks/hello-world-svelte)
+with a bit of Todo thrown in for demonstration.
+
+It fixes a few issues:
+
+- Updates all the dependencies (as of September 2023)
+- Fixes the Content Security Policy so that the script and styles are properly loaded.
 
 ![A screenshot of the sample extension.](./assets/hello-world.png)
+
+## New Features
+
+- JSON-RPC communication between the client (webview) and the server (extension).
 
 ## Documentation
 
@@ -16,7 +26,7 @@ For a deeper dive into how this sample works, read the guides below.
 
 ```bash
 # Copy sample extension locally
-npx degit microsoft/vscode-webview-ui-toolkit-samples/frameworks/hello-world-svelte hello-world
+npx degit Jason3S/webview-sample-svelte-hello-world hello-world
 
 # Navigate into sample directory
 cd hello-world
@@ -25,7 +35,7 @@ cd hello-world
 npm run install:all
 
 # Build webview UI source code
-npm run build:webview
+npm run build:all
 
 # Open sample in VS Code
 code .

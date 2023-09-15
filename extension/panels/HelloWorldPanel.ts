@@ -126,7 +126,6 @@ export class HelloWorldPanel {
           <title>Hello World</title>
           <meta charset="UTF-8" />
           <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-          <!--- style-src ${webview.cspSource}; --->
           <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'nonce-${nonce}'; script-src 'nonce-${nonce}';">
           <meta property="csp-nonce" content="${nonce}" />
           <link rel="stylesheet" type="text/css" nonce="${nonce}" href="${stylesUri}">
