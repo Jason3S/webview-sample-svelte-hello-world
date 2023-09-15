@@ -46,7 +46,7 @@ export class AppView {
       // Enable JavaScript in the webview
       enableScripts: true,
       // Restrict the webview to only load resources from the `out` and `webview-ui/public/build` directories
-      localResourceRoots: [Uri.joinPath(extensionUri, 'out'), Uri.joinPath(extensionUri, 'webview-ui/public/build')],
+      localResourceRoots: [Uri.joinPath(extensionUri, 'out'), Uri.joinPath(extensionUri, 'webview-ui/public')],
     };
   }
 
@@ -80,9 +80,10 @@ export class AppView {
   private _getWebviewContent() {
     const { webview, extensionUri, viewName } = this;
     // The CSS file from the Svelte build output
-    const stylesUri = getUri(webview, extensionUri, ['webview-ui', 'public', 'build', 'bundle.css']);
+    const stylesUri = getUri(webview, extensionUri, 'webview-ui/public/build/bundle.css');
+    const stylesCodiconUri = getUri(webview, extensionUri, 'webview-ui/public/assets/css/codicon.css');
     // The JS file from the Svelte build output
-    const scriptUri = getUri(webview, extensionUri, ['webview-ui', 'public', 'build', 'bundle.js']);
+    const scriptUri = getUri(webview, extensionUri, 'webview-ui/public/build/bundle.js');
 
     const nonce = getNonce();
 
@@ -96,6 +97,7 @@ export class AppView {
           <meta name="viewport" content="width=device-width, initial-scale=1.0" />
           <meta http-equiv="Content-Security-Policy" content="
             default-src 'none';
+            font-src ${webview.cspSource};
             style-src 'nonce-${nonce}';
             style-src-elem 'nonce-${nonce}';
             script-src 'nonce-${nonce}';
@@ -103,6 +105,7 @@ export class AppView {
           <meta property="csp-nonce" content="${nonce}" />
           <meta property="view-name" content="${viewName}" />
           <link rel="stylesheet" type="text/css" nonce="${nonce}" href="${stylesUri}">
+          <link rel="stylesheet" type="text/css" nonce="${nonce}" href="${stylesCodiconUri}">
           <script defer nonce="${nonce}" src="${scriptUri}"></script>
         </head>
         <body>

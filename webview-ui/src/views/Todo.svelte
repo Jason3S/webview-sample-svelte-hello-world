@@ -1,6 +1,7 @@
 <script lang="ts">
-  import type { Checkbox, TextField } from '@vscode/webview-ui-toolkit';
-  import type { ChangeEventHandler } from 'svelte/elements';
+  import VscodeButton from '../components/VscodeButton.svelte';
+  import VscodeCheckbox from '../components/VscodeCheckbox.svelte';
+  import VscodeTextField from '../components/VscodeTextField.svelte';
   import { vscode } from '../utilities/vscode';
 
   interface Todo {
@@ -34,14 +35,6 @@
 
   $: remaining = todos.filter((t) => !t.done).length;
 
-  function onChecked(update: (v: boolean) => unknown): ChangeEventHandler<Checkbox> {
-    return (e) => update(e.currentTarget.checked);
-  }
-
-  function onChangeText(update: (v: string) => unknown): ChangeEventHandler<TextField> {
-    return (e) => update(e.currentTarget.value || '');
-  }
-
   function onTodoUpdate(_todo?: Todo) {
     console.log('onTodoUpdate %o', _todo);
     const state = vscode.getState() || {};
@@ -55,18 +48,9 @@
 
   <ul class="todos">
     {#each todos as todo}
-      <li class:done={todo.done}>
-        <vscode-text-field
-          class="todo-item"
-          type="text"
-          placeholder="What needs to be done?"
-          value={todo.text}
-          on:change={onChangeText((text) => ((todo.text = text), onTodoUpdate(todo)))}
-          ><vscode-checkbox
-            slot="start"
-            checked={todo.done}
-            on:change={onChecked((checked) => ((todo.done = checked), onTodoUpdate(todo)))}
-          /></vscode-text-field
+      <li class="todo-item" class:done={todo.done}>
+        <VscodeTextField inputType="text" placeholder="What needs to be done?" bind:value={todo.text}
+          ><section class="slot" slot="start"><VscodeCheckbox bind:checked={todo.done} /></section></VscodeTextField
         >
       </li>
     {/each}
@@ -76,13 +60,13 @@
 
   <div class="todo-actions">
     <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-static-element-interactions -->
-    <vscode-button on:click={add}> Add New </vscode-button>
+    <VscodeButton on:click={add}>Add New</VscodeButton>
 
     <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-static-element-interactions -->
-    <vscode-button on:click={clear}> Clear Completed </vscode-button>
+    <VscodeButton on:click={clear}>Clear Completed</VscodeButton>
 
     <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-static-element-interactions -->
-    <vscode-button on:click={reset}> Reset the List </vscode-button>
+    <VscodeButton on:click={reset}>Reset the List</VscodeButton>
   </div>
 </div>
 
@@ -104,11 +88,11 @@
     width: 100%;
   }
 
-  .todo-actions > vscode-button {
+  .todo-actions > :global(vscode-button) {
     display: block;
     width: 100%;
     max-width: 300px;
-    margin: 0 auto;
+    margin: 5px auto;
     text-align: center;
   }
 

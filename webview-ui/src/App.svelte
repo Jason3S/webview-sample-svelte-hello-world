@@ -1,6 +1,5 @@
 <script lang="ts">
   import { provideVSCodeDesignSystem, allComponents } from '@vscode/webview-ui-toolkit';
-  import { getClientApi } from './api';
   import Todo from './views/Todo.svelte';
   import HelloWorld from './views/HelloWorld.svelte';
 

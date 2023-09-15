@@ -1,14 +1,19 @@
 <script lang="ts">
+  import VscodeButton from '../components/VscodeButton.svelte';
+  import VscodeCheckbox from '../components/VscodeCheckbox.svelte';
+  import VscodeTextField from '../components/VscodeTextField.svelte';
 </script>
 
 <div>
   <h1>Elements</h1>
 
-  <div>
+  <section>
+    <h3>Samples</h3>
+
     <ul>
       <li>Link: <vscode-link href="#">Link Text</vscode-link></li>
-      <li>Checkbox: <vscode-checkbox>Label</vscode-checkbox></li>
-      <li>Divider: <vscode-divider></vscode-divider></li>
+      <li>Checkbox: <VscodeCheckbox>Label</VscodeCheckbox></li>
+      <li>Divider: <vscode-divider /></li>
       <li>
         <div class="dropdown-container">
           <label for="my-dropdown">Choose an option:</label>
@@ -20,22 +25,36 @@
         </div>
       </li>
     </ul>
-  </div>
+  </section>
 
-  <vscode-text-field>
-    Text Field Label
-    <section slot="end" style="display:flex; align-items: center;">
-      <vscode-button appearance="icon" aria-label="Match Case">
-        <span class="codicon codicon-case-sensitive"></span>
-      </vscode-button>
-      <vscode-button appearance="icon" aria-label="Match Whole Word">
-        <span class="codicon codicon-whole-word"></span>
-      </vscode-button>
-      <vscode-button appearance="icon" aria-label="Use Regular Expression">
-        <span class="codicon codicon-regex"></span>
-      </vscode-button>
-    </section>
-  </vscode-text-field>
+  <section>
+    <h3>Buttons</h3>
+
+    <VscodeButton appearance="primary">Primary</VscodeButton>
+    <VscodeButton appearance="secondary">Secondary</VscodeButton>
+    Icon: <VscodeButton appearance="icon" ariaLabel="Use Regular Expression">
+      <span class="codicon codicon-regex"></span>
+    </VscodeButton>
+  </section>
+
+  <section>
+    <h3>Inputs</h3>
+
+    <VscodeTextField>
+      Text Field Label
+      <section slot="end" style="display:flex; align-items: center;">
+        <VscodeButton appearance="icon" ariaLabel="Match Case">
+          <span class="codicon codicon-case-sensitive"></span>
+        </VscodeButton>
+        <VscodeButton appearance="icon" ariaLabel="Match Whole Word">
+          <span class="codicon codicon-whole-word"></span>
+        </VscodeButton>
+        <VscodeButton appearance="icon" ariaLabel="Use Regular Expression">
+          <span class="codicon codicon-regex"></span>
+        </VscodeButton>
+      </section>
+    </VscodeTextField>
+  </section>
 </div>
 
 <style>
