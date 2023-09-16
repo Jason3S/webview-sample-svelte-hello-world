@@ -11,6 +11,7 @@
   "type": "module",
   "dependencies": {
     "@vscode/webview-ui-toolkit": "^1.2.2",
+    "fast-equals": "^5.0.1",
     "sirv-cli": "^2.0.2"
   },
   "devDependencies": {

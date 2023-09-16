@@ -5,5 +5,5 @@
     "composite": true
   },
   "files": [],
-  "references": [{ "path": "./extension" }, { "path": "./common" }]
+  "references": [{ "path": "./extension" }, { "path": "./common" }, { "path": "./external" }]
 }

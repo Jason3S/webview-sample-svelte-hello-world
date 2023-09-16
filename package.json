@@ -63,6 +63,7 @@
   },
   "dependencies": {
     "@tsconfig/node18": "^18.2.2",
+    "fast-equals": "^5.0.1",
     "vscode-jsonrpc": "^8.1.0"
   },
   "license": "MIT"

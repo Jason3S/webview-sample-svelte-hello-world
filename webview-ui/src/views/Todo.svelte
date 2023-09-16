@@ -1,86 +1,47 @@
 <script lang="ts">
-  import { onDestroy } from 'svelte';
   import { getClientApi } from '../api';
   import VscodeButton from '../components/VscodeButton.svelte';
   import VscodeCheckbox from '../components/VscodeCheckbox.svelte';
   import VscodeTextField from '../components/VscodeTextField.svelte';
-  import { type Disposable } from '../utilities/vscode';
-  import type { Todos } from '../../../common/apiModels';
+  import { todos } from '../state/appState';
 
   const api = getClientApi();
-  const disposables: Disposable[] = [];
-  disposables.push(api.onChangeTodos(onChangeTodos));
 
-  onDestroy(() => {
-    while (disposables.length) {
-      disposables.pop()?.dispose();
-    }
-  });
-
-  let todos: Todos | undefined = undefined;
-  let lastSig = '';
-  let lastSeq = -1;
+  $: remaining = $todos?.todos.filter((t) => !t.done).length || 0;
 
   async function add() {
-    if (!todos) return;
-    todos.todos.push({
-      done: false,
-      text: '',
+    todos.update((t) => {
+      if (!t) return t;
+
+      const list = [
+        ...t.todos,
+        {
+          done: false,
+          text: '',
+        },
+      ];
+      return { ...t, todos: list };
     });
-    todos = todos;
   }
 
   function clear() {
-    if (!todos) return;
-    todos.todos = todos.todos.filter((t) => !t.done);
-    todos = todos;
+    todos.update((t) => {
+      if (!t) return t;
+      return { ...t, todos: t.todos.filter((t) => !t.done) };
+    });
   }
 
   function reset() {
     return api.serverRequest.resetTodos();
   }
-
-  $: remaining = (todos?.todos || []).filter((t) => !t.done).length;
-  $: {
-    onTodoUpdate(todos);
-  }
-
-  async function onTodoUpdate(todos: Todos | undefined) {
-    if (!todos) return;
-    const sig = calcTodoSig(todos);
-    if (sig === lastSig) return;
-    const result = await api.serverRequest.updateTodos(todos);
-    onChangeTodos(result.value);
-  }
-
-  async function initTodos() {
-    const t = await api.serverRequest.getTodos();
-    todos = t ?? todos;
-  }
-
-  function onChangeTodos(newTodos: Todos) {
-    if (newTodos.seq <= lastSeq) return;
-    if (newTodos.seq <= (todos?.seq || 0)) return;
-    const sig = calcTodoSig(newTodos);
-    if (sig === lastSig) return;
-    lastSig = sig;
-    lastSeq = newTodos.seq;
-    todos = newTodos;
-  }
-
-  function calcTodoSig(todos: Todos): string {
-    return JSON.stringify(todos);
-  }
-
-  initTodos();
 </script>
 
 <div>
   <h1>todos</h1>
 
   <ul class="todos">
-    {#if todos}
-      {#each todos.todos as todo}
+    {#if $todos}
+      {#each $todos.todos as todo}
         <li class="todo-item" class:done={todo.done}>
           <VscodeTextField inputType="text" placeholder="What needs to be done?" bind:value={todo.text}
             ><section class="slot" slot="start"><VscodeCheckbox bind:checked={todo.done} /></section></VscodeTextField

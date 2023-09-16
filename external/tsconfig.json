@@ -2,12 +2,12 @@
   "extends": "@tsconfig/node18",
   "compilerOptions": {
     "composite": true,
-    "outDir": "../out/extension",
-    "lib": ["es2022", "dom"],
+    "outDir": "../out/external",
+    "module": "CommonJS",
+    "moduleResolution": "Node",
     "sourceMap": true,
     "rootDir": ".",
     "strict": true
   },
-  "references": [{ "path": "../common" }, { "path": "../external" }],
   "include": ["."]
 }

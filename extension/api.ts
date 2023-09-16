@@ -53,6 +53,7 @@ export function createApi(connection: MessageConnection): ServerSideApi {
       success = true;
       return next;
     }
+
     log('Update Todos: %o', todos);
     store.todos.update(update);
     return { success, value: store.todos.value };
@@ -69,6 +70,7 @@ export function createApi(connection: MessageConnection): ServerSideApi {
    * Reset the Todo list
    */
   async function resetTodos() {
-    store.todos.update((current) => ({ ...current, todos: sampleList.map((todo) => ({ ...todo })) }));
+    const current = store.todos.value;
+    updateTodos({ ...current, todos: sampleList.map((todo) => ({ ...todo })) });
   }
 }

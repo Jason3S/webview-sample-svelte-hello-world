@@ -1,18 +1,19 @@
-import type { Disposable } from '../common/disposable';
-import { deepEqual } from '../external/deepEqual';
+type DisposableFn = () => void;
 
-export interface ObservableValue<T> {
+export interface Store<T> {
   value: T;
   set(v: T): void;
   update(u: (v: T) => T): void;
-  subscribe(s: (v: T) => any): Disposable;
+  subscribe(s: (v: T) => any): DisposableFn;
 }
-class Observable<T> implements ObservableValue<T> {
+class Observable<T> implements Store<T> {
   private _value: T;
   private _subscriptions = new Set<(v: T) => any>();
   private _busy = false;
+  private _sig = '';
   constructor(value: T) {
     this._value = value;
+    this._sig = this.calcSig(value);
   }
 
   get value() {
@@ -25,20 +26,18 @@ class Observable<T> implements ObservableValue<T> {
 
   set(value: T) {
     // Do not update if the value has not changed.
-    if (this._value === value || deepEqual(this._value, value)) return;
+    const sig = this.calcSig(value);
+    if (sig === this._sig) return;
     this._value = value;
+    this._sig = sig;
     this.notify();
     return;
   }
 
-  subscribe(s: (v: T) => any): Disposable {
+  subscribe(s: (v: T) => any): DisposableFn {
     const subscriptions = this._subscriptions;
     subscriptions.add(s);
-    return {
-      dispose() {
-        subscriptions.delete(s);
-      },
-    };
+    return () => subscriptions.delete(s);
   }
 
   update(u: (v: T) => T) {
@@ -56,7 +55,13 @@ class Observable<T> implements ObservableValue<T> {
       this._busy = false;
     }
   }
+
+  private calcSig(v: T): string {
+    return v === undefined ? 'undefined' : JSON.stringify(v);
+  }
 }
-export function createStoreValue<T>(v: T): ObservableValue<T> {
+
+export function writable<T>(v?: T | undefined): Store<T | undefined>;
+export function writable<T>(v: T): Store<T> {
   return new Observable(v);
 }

@@ -1,18 +1,15 @@
 <script lang="ts">
-  import { onDestroy } from 'svelte';
   import { getClientApi } from '../api';
   import VscodeButton from '../components/VscodeButton.svelte';
   import VscodeCheckbox from '../components/VscodeCheckbox.svelte';
   import { vscode, type Disposable } from '../utilities/vscode';
   import VsCodeComponents from './VSCodeComponents.svelte';
-  import type { Todos } from '../../../common/apiModels';
+  import { todos } from '../state/appState';
 
   export let showVsCodeComponents = vscode.getState()?.showVsCodeComponents || false;
   export let name: string;
-  export let todos: Todos | undefined = undefined;
 
   const api = getClientApi();
-  const disposables: Disposable[] = [];
 
   let messages: string[] = [];
 
@@ -40,19 +37,6 @@
       vscode.setState(newState);
     }
   }
-
-  function onChangeTodos(newTodos: Todos) {
-    console.log(`${name} onChangeTodos %o`, newTodos);
-    todos = newTodos;
-  }
-
-  disposables.push(api.onChangeTodos(onChangeTodos));
-
-  onDestroy(() => {
-    while (disposables.length) {
-      disposables.pop()?.dispose();
-    }
-  });
 </script>
 
 <div>
@@ -66,9 +50,9 @@
     {/each}
   </ul>
 
-  {#if todos && todos.todos.length}
+  {#if $todos && $todos.todos.length}
     <ul>
-      {#each todos.todos as todo}
+      {#each $todos.todos as todo}
         <li>{todo.text} - {todo.done}</li>
       {/each}
     </ul>
