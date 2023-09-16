@@ -1,17 +1,42 @@
 import { type MessageConnection } from 'vscode-jsonrpc/lib/common/connection';
-import { createClientApi, createServerApi, type ClientMethods, type RpcAPI, type ServerMethods } from './json-rpc-api';
+import type { Todos } from './apiModels';
+import {
+  createClientApi,
+  createServerApi,
+  type ApplyNotificationAPI,
+  type ApplyRequestAPI,
+  type ClientMethods,
+  type RpcAPI,
+  type ServerMethods,
+} from './json-rpc-api';
 
-type Maybe<T> = T | undefined;
+export interface UpdateResult<T> {
+  success: boolean;
+  value: T;
+}
+
+export interface ServerRequestsAPI {
+  whatTimeIsIt(): Promise<string>;
+  getTodos(): Promise<Todos>;
+  updateTodos(todos: Todos): Promise<UpdateResult<Todos>>;
+  resetTodos(): Promise<void>;
+}
+
+export interface ServerNotificationsAPI {
+  showInformationMessage(message: string): Promise<void>;
+}
+
+export interface ClientRequestsAPI {}
+
+export interface ClientNotificationsAPI {
+  onChangeTodos: (todos: Todos) => Promise<void>;
+}
 
 export interface HelloWorldAPI extends RpcAPI {
-  serverRequests: {
-    whatTimeIsIt: Maybe<() => Promise<string>>;
-  };
-  serverNotifications: {
-    showInformationMessage: Maybe<(message: string) => Promise<void>>;
-  };
-  clientRequests: {};
-  clientNotifications: {};
+  serverRequests: ApplyRequestAPI<ServerRequestsAPI>;
+  serverNotifications: ApplyNotificationAPI<ServerNotificationsAPI>;
+  clientRequests: ApplyRequestAPI<ClientRequestsAPI>;
+  clientNotifications: ApplyNotificationAPI<ClientNotificationsAPI>;
 }
 
 export interface ServerSideApi extends ClientMethods<HelloWorldAPI> {}

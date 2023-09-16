@@ -1,12 +1,18 @@
 <script lang="ts">
+  import { onDestroy } from 'svelte';
   import { getClientApi } from '../api';
   import VscodeButton from '../components/VscodeButton.svelte';
   import VscodeCheckbox from '../components/VscodeCheckbox.svelte';
-  import { vscode } from '../utilities/vscode';
+  import { vscode, type Disposable } from '../utilities/vscode';
   import VsCodeComponents from './VSCodeComponents.svelte';
+  import type { Todos } from '../../../common/apiModels';
 
   export let showVsCodeComponents = vscode.getState()?.showVsCodeComponents || false;
   export let name: string;
+  export let todos: Todos | undefined = undefined;
+
+  const api = getClientApi();
+  const disposables: Disposable[] = [];
 
   let messages: string[] = [];
 
@@ -17,12 +23,10 @@
   }
 
   function handleHowdyClick() {
-    const api = getClientApi();
     api.serverNotification.showInformationMessage('Hey There.');
   }
 
   async function handleWhatTimeIsIt() {
-    const api = getClientApi();
     const response = await api.serverRequest.whatTimeIsIt();
     messages.push(response);
     messages = messages.slice(-10);
@@ -36,6 +40,19 @@
       vscode.setState(newState);
     }
   }
+
+  function onChangeTodos(newTodos: Todos) {
+    console.log(`${name} onChangeTodos %o`, newTodos);
+    todos = newTodos;
+  }
+
+  disposables.push(api.onChangeTodos(onChangeTodos));
+
+  onDestroy(() => {
+    while (disposables.length) {
+      disposables.pop()?.dispose();
+    }
+  });
 </script>
 
 <div>
@@ -48,6 +65,14 @@
       <li>{msg}</li>
     {/each}
   </ul>
+
+  {#if todos && todos.todos.length}
+    <ul>
+      {#each todos.todos as todo}
+        <li>{todo.text} - {todo.done}</li>
+      {/each}
+    </ul>
+  {/if}
 
   <VscodeCheckbox bind:checked={showVsCodeComponents}>Show VSCode Component Samples</VscodeCheckbox>
 

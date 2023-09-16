@@ -1,7 +1,7 @@
 import type { WebviewApi } from 'vscode-webview';
 import type { AppState } from '../types';
 
-interface Disposable {
+export interface Disposable {
   dispose: () => void;
 }
 

@@ -1,13 +1,21 @@
 import { window } from 'vscode';
 import { type MessageConnection } from 'vscode-jsonrpc/node';
-import { HelloWorldAPI, ServerSideApi, createServerSideHelloWorldApi } from '../common/api';
+import { HelloWorldAPI, ServerSideApi, UpdateResult, createServerSideHelloWorldApi } from '../common/api';
+import { Todos } from '../common/apiModels';
+import { createDispose, type Disposable } from '../common/disposable';
+import { log } from './logger';
+import { sampleList, store } from './store';
 
 export function createApi(connection: MessageConnection): ServerSideApi {
+  const disposables: Disposable[] = [];
+  const dispose = createDispose(disposables);
+
   const api: HelloWorldAPI = {
     serverRequests: {
-      async whatTimeIsIt() {
-        return new Date().toString();
-      },
+      whatTimeIsIt,
+      updateTodos,
+      getTodos,
+      resetTodos,
     },
     serverNotifications: {
       async showInformationMessage(message) {
@@ -15,8 +23,52 @@ export function createApi(connection: MessageConnection): ServerSideApi {
       },
     },
     clientRequests: {},
-    clientNotifications: {},
+    clientNotifications: { onChangeTodos: undefined },
   };
 
-  return createServerSideHelloWorldApi(connection, api);
+  const serverSideApi = createServerSideHelloWorldApi(connection, api);
+  disposables.push(serverSideApi);
+
+  store.todos.subscribe((v) => serverSideApi.clientNotification.onChangeTodos(v));
+
+  return { ...serverSideApi, dispose };
+
+  /**
+   * Get the time
+   */
+  async function whatTimeIsIt() {
+    return new Date().toString();
+  }
+
+  /**
+   * Update the todo list
+   */
+  async function updateTodos(todos: Todos): Promise<UpdateResult<Todos>> {
+    let success = false;
+
+    function update(current: Todos): Todos {
+      if (current.seq !== todos.seq) return current;
+      const next = { ...todos };
+      ++next.seq;
+      success = true;
+      return next;
+    }
+    log('Update Todos: %o', todos);
+    store.todos.update(update);
+    return { success, value: store.todos.value };
+  }
+
+  /**
+   * Fetch the todo list
+   */
+  async function getTodos() {
+    return store.todos.value;
+  }
+
+  /**
+   * Reset the Todo list
+   */
+  async function resetTodos() {
+    store.todos.update((current) => ({ ...current, todos: sampleList.map((todo) => ({ ...todo })) }));
+  }
 }
