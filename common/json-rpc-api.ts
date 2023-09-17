@@ -241,14 +241,18 @@ function mapNotificationsToPubSub<T extends Notifications>(notifications: DefUse
   return Object.fromEntries(Object.entries(notifications).map(mapPubSub).filter(isDefined)) as WrapInPubSub<T>;
 }
 
-function createPubMultipleSubscribers<Subscriber extends (...args: any) => any>(name: string): PubSub<Subscriber> {
+function createPubMultipleSubscribers<Subscriber extends ((...args: any) => void) | ((...args: any) => Promise<void>)>(
+  name: string,
+): PubSub<Subscriber> {
   const subscribers = new Set<Subscriber>();
+
   async function publish(...p: Parameters<Subscriber>) {
     for (const s of subscribers) {
       log(`notify ${name} %o`, s);
-      await s(p);
+      await s(...arguments);
     }
   }
+
   function subscribe(s: Subscriber): Disposable {
     log(`subscribe to ${name} %o`, s);
     subscribers.add(s);
@@ -260,10 +264,12 @@ function createPubMultipleSubscribers<Subscriber extends (...args: any) => any>(
 
 function createPubSingleSubscriber<Subscriber extends (...args: any) => any>(name: string): PubSub<Subscriber> {
   let subscriber: Subscriber | undefined = undefined;
+
   async function listener(...p: Parameters<Subscriber>) {
     log(`notify ${name} %o`, subscriber);
-    await subscriber?.(p);
+    return await subscriber?.(...arguments);
   }
+
   function subscribe(s: Subscriber): Disposable {
     subscriber = s;
     log(`subscribe to ${name} %o`, s);

@@ -35,10 +35,14 @@ api.clientNotification.onChangeTodos.subscribe((updated) => {
 
 async function initTodos() {
   const todos = await api.serverRequest.getTodos();
-  updateTodos(todos, true);
+  console.log('initTodos %o', todos);
+  if (todos) {
+    updateTodos(todos, true);
+  }
 }
 
 function updateTodos(todos: Todos, fromServer = false) {
+  console.log('updateTodos %o', todos);
   const from: 'server' | 'client' = fromServer ? 'server' : 'client';
   const next = { from, todos };
   metaTodos.update((curr) => {

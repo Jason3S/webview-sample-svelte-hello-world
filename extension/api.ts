@@ -63,7 +63,9 @@ export function createApi(connection: MessageConnection): ServerSideApi {
    * Fetch the todo list
    */
   async function getTodos() {
-    return store.todos.value;
+    const v = store.todos.value;
+    log('getTodos, found: %o', v);
+    return v;
   }
 
   /**

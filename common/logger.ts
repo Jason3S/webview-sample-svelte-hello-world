@@ -6,7 +6,8 @@ export enum LogLevel {
   debug,
 }
 
-let logLevel = LogLevel.error;
+// let logLevel = LogLevel.error;
+let logLevel = LogLevel.debug;
 
 export const log = makeLogger(console.log, LogLevel.info);
 export const error = makeLogger(console.error, LogLevel.error);
