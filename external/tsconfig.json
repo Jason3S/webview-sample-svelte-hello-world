@@ -5,6 +5,7 @@
     "outDir": "../out/external",
     "module": "CommonJS",
     "moduleResolution": "Node",
+    "esModuleInterop": true,
     "sourceMap": true,
     "rootDir": ".",
     "strict": true

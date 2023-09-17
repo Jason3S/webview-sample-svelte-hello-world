@@ -5,9 +5,11 @@ import {
   createServerApi,
   type ApplyNotificationAPI,
   type ApplyRequestAPI,
-  type ClientMethods,
+  type ClientAPIDef,
+  type ServerSideMethods,
   type RpcAPI,
-  type ServerMethods,
+  type ServerAPIDef,
+  type ClientSideMethods,
 } from './json-rpc-api';
 
 export interface UpdateResult<T> {
@@ -29,7 +31,7 @@ export interface ServerNotificationsAPI {
 export interface ClientRequestsAPI {}
 
 export interface ClientNotificationsAPI {
-  onChangeTodos: (todos: Todos) => Promise<void>;
+  onChangeTodos: (todos: Todos) => void;
 }
 
 export interface HelloWorldAPI extends RpcAPI {
@@ -39,14 +41,16 @@ export interface HelloWorldAPI extends RpcAPI {
   clientNotifications: ApplyNotificationAPI<ClientNotificationsAPI>;
 }
 
-export interface ServerSideApi extends ClientMethods<HelloWorldAPI> {}
+export interface ServerSideApi extends ServerSideMethods<HelloWorldAPI> {}
+export interface ClientSideApi extends ClientSideMethods<HelloWorldAPI> {}
 
-export interface ClientSideApi extends ServerMethods<HelloWorldAPI> {}
+export type ServerSideApiDef = ServerAPIDef<HelloWorldAPI>;
+export type ClientSideApiDef = ClientAPIDef<HelloWorldAPI>;
 
-export function createServerSideHelloWorldApi(connection: MessageConnection, api: HelloWorldAPI): ServerSideApi {
+export function createServerSideHelloWorldApi(connection: MessageConnection, api: ServerAPIDef<HelloWorldAPI>): ServerSideApi {
   return createServerApi(connection, api);
 }
 
-export function createClientSideHelloWorldApi(connection: MessageConnection, api: HelloWorldAPI): ClientSideApi {
+export function createClientSideHelloWorldApi(connection: MessageConnection, api: ClientAPIDef<HelloWorldAPI>): ClientSideApi {
   return createClientApi(connection, api);
 }

@@ -1,4 +1,4 @@
-import type { Disposable } from '../common/disposable';
+import { createDisposable, type Disposable } from '../common/disposable';
 import { deepEqual } from '../external/deepEqual';
 
 export interface ObservableValue<T> {
@@ -34,11 +34,7 @@ class Observable<T> implements ObservableValue<T> {
   subscribe(s: (v: T) => any): Disposable {
     const subscriptions = this._subscriptions;
     subscriptions.add(s);
-    return {
-      dispose() {
-        subscriptions.delete(s);
-      },
-    };
+    return createDisposable(() => subscriptions.delete(s));
   }
 
   update(u: (v: T) => T) {

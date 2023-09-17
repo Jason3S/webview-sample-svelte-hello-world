@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "tsBuildInfoFile": "out/root/tsconfig.tsbuildinfo",
+    "esModuleInterop": true,
     "incremental": true,
     "composite": true
   },

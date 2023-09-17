@@ -1,16 +1,16 @@
 import { window } from 'vscode';
 import { type MessageConnection } from 'vscode-jsonrpc/node';
-import { HelloWorldAPI, ServerSideApi, UpdateResult, createServerSideHelloWorldApi } from '../common/api';
+import { HelloWorldAPI, ServerSideApi, ServerSideApiDef, UpdateResult, createServerSideHelloWorldApi } from '../common/api';
 import { Todos } from '../common/apiModels';
-import { createDispose, type Disposable } from '../common/disposable';
+import { createDisposeMethodFromList, type Disposable } from '../common/disposable';
 import { log } from './logger';
 import { sampleList, store } from './store';
 
 export function createApi(connection: MessageConnection): ServerSideApi {
   const disposables: Disposable[] = [];
-  const dispose = createDispose(disposables);
+  const dispose = createDisposeMethodFromList(disposables);
 
-  const api: HelloWorldAPI = {
+  const api: ServerSideApiDef = {
     serverRequests: {
       whatTimeIsIt,
       updateTodos,
@@ -23,7 +23,7 @@ export function createApi(connection: MessageConnection): ServerSideApi {
       },
     },
     clientRequests: {},
-    clientNotifications: { onChangeTodos: undefined },
+    clientNotifications: { onChangeTodos: true },
   };
 
   const serverSideApi = createServerSideHelloWorldApi(connection, api);

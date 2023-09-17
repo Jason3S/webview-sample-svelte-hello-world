@@ -29,7 +29,7 @@ todos.subscribe((todo) => {
   todo && updateTodos(todo, false);
 });
 
-api.onChangeTodos((updated) => {
+api.clientNotification.onChangeTodos.subscribe((updated) => {
   updateTodos(updated, true);
 });
 
