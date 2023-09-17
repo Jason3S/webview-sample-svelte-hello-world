@@ -1,7 +1,5 @@
 import { createClientSideHelloWorldApi, type ClientSideApi } from '../../common/api.js';
-import type { Todos } from '../../common/apiModels.js';
 import { getRpcConnection } from './utilities/json-rpc';
-import type { Disposable } from './utilities/vscode.js';
 
 export interface API extends ClientSideApi {}
 
@@ -24,6 +22,8 @@ function createApi(): API {
       updateTodos: true,
       getTodos: true,
       resetTodos: true,
+      getLogLevel: true,
+      setLogLevel: true,
     },
     clientNotifications: {
       onChangeTodos: true,

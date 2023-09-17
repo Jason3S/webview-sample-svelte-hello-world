@@ -1,10 +1,11 @@
 import { window } from 'vscode';
 import { type MessageConnection } from 'vscode-jsonrpc/node';
-import { HelloWorldAPI, ServerSideApi, ServerSideApiDef, UpdateResult, createServerSideHelloWorldApi } from '../common/api';
+import { ServerSideApi, ServerSideApiDef, UpdateResult, createServerSideHelloWorldApi } from '../common/api';
 import { Todos } from '../common/apiModels';
 import { createDisposeMethodFromList, type Disposable } from '../common/disposable';
 import { log } from './logger';
 import { sampleList, store } from './store';
+import { getLogLevel, setLogLevel } from '../common/logger';
 
 export function createApi(connection: MessageConnection): ServerSideApi {
   const disposables: Disposable[] = [];
@@ -16,6 +17,8 @@ export function createApi(connection: MessageConnection): ServerSideApi {
       updateTodos,
       getTodos,
       resetTodos,
+      getLogLevel: async () => getLogLevel(),
+      setLogLevel: async (level) => (typeof level === 'number' && setLogLevel(level), getLogLevel()),
     },
     serverNotifications: {
       async showInformationMessage(message) {

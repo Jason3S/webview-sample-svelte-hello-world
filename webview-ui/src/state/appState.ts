@@ -1,6 +1,7 @@
-import { writable } from './store';
 import type { Todos } from '../../../common/apiModels';
+import { log } from '../../../common/logger';
 import { getClientApi } from '../api';
+import { writable } from './store';
 
 interface MetaTodos {
   from: 'server' | 'client';
@@ -35,18 +36,18 @@ api.clientNotification.onChangeTodos.subscribe((updated) => {
 
 async function initTodos() {
   const todos = await api.serverRequest.getTodos();
-  console.log('initTodos %o', todos);
+  log('initTodos %o', todos);
   if (todos) {
     updateTodos(todos, true);
   }
 }
 
 function updateTodos(todos: Todos, fromServer = false) {
-  console.log('updateTodos %o', todos);
+  log('updateTodos %o', todos);
   const from: 'server' | 'client' = fromServer ? 'server' : 'client';
   const next = { from, todos };
   metaTodos.update((curr) => {
-    console.log('onChangeTodos %o -> %o', curr, next);
+    log('onChangeTodos %o -> %o', curr, next);
     if (!curr || next.todos.seq > curr.todos.seq) return next;
     if (next.from === 'client' && next.todos.seq === curr.todos.seq) return next;
     return curr;

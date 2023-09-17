@@ -1,4 +1,7 @@
+import { LogLevel, setLogLevel } from '../../common/logger';
 import App from './App.svelte';
+
+setLogLevel(LogLevel.debug);
 
 function getView() {
   const node = document.querySelector('meta[property="view-name"]');

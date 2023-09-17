@@ -11,6 +11,7 @@ import {
   type ServerAPIDef,
   type ClientSideMethods,
 } from './json-rpc-api';
+import { LogLevel } from './logger';
 
 export interface UpdateResult<T> {
   success: boolean;
@@ -22,6 +23,8 @@ export interface ServerRequestsAPI {
   getTodos(): Promise<Todos>;
   updateTodos(todos: Todos): Promise<UpdateResult<Todos>>;
   resetTodos(): Promise<void>;
+  getLogLevel(): Promise<LogLevel>;
+  setLogLevel(level: LogLevel): Promise<LogLevel>;
 }
 
 export interface ServerNotificationsAPI {

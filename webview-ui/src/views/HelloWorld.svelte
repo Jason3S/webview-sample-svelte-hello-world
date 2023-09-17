@@ -1,15 +1,19 @@
 <script lang="ts">
+  import { writable } from 'svelte/store';
+  import { LogLevel, getLogLevel, setLogLevel } from '../../../common/logger';
   import { getClientApi } from '../api';
   import VscodeButton from '../components/VscodeButton.svelte';
   import VscodeCheckbox from '../components/VscodeCheckbox.svelte';
-  import { vscode, type Disposable } from '../utilities/vscode';
-  import VsCodeComponents from './VSCodeComponents.svelte';
   import { todos } from '../state/appState';
+  import { vscode } from '../utilities/vscode';
+  import VsCodeComponents from './VSCodeComponents.svelte';
 
   export let showVsCodeComponents = vscode.getState()?.showVsCodeComponents || false;
   export let name: string;
 
   const api = getClientApi();
+
+  let logDebug = writable<boolean | undefined>(getLogLevel() >= LogLevel.debug);
 
   let messages: string[] = [];
 
@@ -18,6 +22,12 @@
   $: {
     updateState(showVsCodeComponents);
   }
+
+  logDebug.subscribe((value) => {
+    const level = value ? LogLevel.debug : LogLevel.error;
+    api.serverRequest.setLogLevel(level);
+    setLogLevel(level);
+  });
 
   function handleHowdyClick() {
     api.serverNotification.showInformationMessage('Hey There.');
@@ -59,6 +69,7 @@
   {/if}
 
   <VscodeCheckbox bind:checked={showVsCodeComponents}>Show VSCode Component Samples</VscodeCheckbox>
+  <VscodeCheckbox bind:checked={$logDebug}>Log Debug Info</VscodeCheckbox>
 
   {#if showVsCodeComponents}
     <VsCodeComponents></VsCodeComponents>
