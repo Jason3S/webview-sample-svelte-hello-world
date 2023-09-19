@@ -16,6 +16,7 @@
       const list = [
         ...t.todos,
         {
+          uuid: Math.random() * 100000 + Date.now(),
           done: false,
           text: '',
         },
@@ -41,7 +42,7 @@
 
   <ul class="todos">
     {#if $todos}
-      {#each $todos.todos as todo}
+      {#each $todos.todos as todo (todo.uuid)}
         <li class="todo-item" class:done={todo.done}>
           <VscodeTextField inputType="text" placeholder="What needs to be done?" bind:value={todo.text}
             ><section class="slot" slot="start"><VscodeCheckbox bind:checked={todo.done} /></section></VscodeTextField

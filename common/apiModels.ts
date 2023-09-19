@@ -1,4 +1,5 @@
 export interface Todo {
+  uuid: number;
   done: boolean;
   text: string;
 }

@@ -11,7 +11,7 @@ export const store: Storage = {
 };
 
 export const sampleList: TodoList = [
-  { done: false, text: 'finish Svelte tutorial' },
-  { done: false, text: 'build an app' },
-  { done: false, text: 'world domination' },
+  { uuid: 1, done: false, text: 'finish Svelte tutorial' },
+  { uuid: 2, done: false, text: 'build an app' },
+  { uuid: 3, done: false, text: 'world domination' },
 ];
