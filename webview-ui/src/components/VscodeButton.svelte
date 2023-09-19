@@ -56,7 +56,7 @@
   $: props = Object.fromEntries(Object.entries(extraProps).filter(([_k, v]) => typeof v !== 'undefined'));
 
   function click(e: Event) {
-    dispatch('click', e);
+    return dispatch('click', e);
   }
 </script>
 

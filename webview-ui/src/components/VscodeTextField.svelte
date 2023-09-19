@@ -1,6 +1,6 @@
 <script lang="ts">
-  import type { TextField } from '@vscode/webview-ui-toolkit';
-  import type { ChangeEvent } from '../types';
+  import { createEventDispatcher } from 'svelte';
+  import type { TextInputEvent } from '../types';
 
   /** Determines if the element should receive document focus on page load. */
   export let autofocus: boolean | undefined = undefined;
@@ -21,16 +21,34 @@
   /** Sets the text field type. */
   export let inputType: string | undefined = undefined;
 
+  /** Set the focus to this element. */
+  export let focus: boolean | undefined = undefined;
+
+  const dispatch = createEventDispatcher();
+
   $: extraProps = { autofocus, disabled, readonly: makeReadonly, maxlength, name, placeholder, size, type: inputType };
   $: props = Object.fromEntries(Object.entries(extraProps).filter(([_k, v]) => typeof v !== 'undefined'));
 
-  function handleChanged(e: ChangeEvent<TextField>) {
-    value = e.currentTarget.value;
+  function handleInput(e: TextInputEvent) {
+    value = e.target.value;
+    return dispatch('input', e);
+  }
+
+  function init(node: HTMLInputElement, useFocus: boolean | undefined) {
+    function update(focus: boolean | undefined) {
+      if (!focus) return;
+
+      const sNode = node.shadowRoot?.querySelector('input');
+      sNode?.focus() ?? node?.focus();
+    }
+
+    update(useFocus);
+    return { update };
   }
 </script>
 
 <!-- svelte-ignore a11y-autofocus -->
-<vscode-text-field {...props} {value} on:change={handleChanged}>
+<vscode-text-field {...props} {value} on:input={handleInput} on:change use:init={focus} on:focus on:blur>
   {#if $$slots.start}
     <section slot="start"><slot name="start" /></section>
   {/if}

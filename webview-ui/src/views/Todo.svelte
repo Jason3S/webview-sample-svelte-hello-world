@@ -9,63 +9,96 @@
 
   $: remaining = $todos?.todos.filter((t) => !t.done).length || 0;
 
-  async function add() {
-    todos.update((t) => {
-      if (!t) return t;
+  let key: string | undefined;
 
-      const list = [
-        ...t.todos,
-        {
-          uuid: Math.random() * 100000 + Date.now(),
-          done: false,
-          text: '',
-        },
-      ];
-      return { ...t, todos: list };
-    });
+  let submitInfo = '';
+  let focusId = 0;
+
+  let focused = '';
+  let blurred = '';
+
+  async function add() {
+    if (!$todos) return;
+    const todo = {
+      uuid: Math.random() * 100000 + Date.now(),
+      done: false,
+      text: '',
+    };
+    focusId = todo.uuid;
+    $todos.todos.push(todo);
+    $todos = $todos;
   }
 
   function clear() {
-    todos.update((t) => {
-      if (!t) return t;
-      return { ...t, todos: t.todos.filter((t) => !t.done) };
-    });
+    if (!$todos) return;
+    $todos.todos = $todos.todos.filter((t) => !t.done);
+    $todos = $todos;
   }
 
   function reset() {
     return api.serverRequest.resetTodos();
+  }
+
+  function changed(index: number) {
+    if (index + 1 === $todos?.todos.length) {
+      add();
+    } else {
+      // Move to the next todo
+      const td = $todos?.todos[index + 1];
+      if (!td) return;
+      focusId = td.uuid;
+    }
   }
 </script>
 
 <div>
   <h1>todos</h1>
 
-  <ul class="todos">
-    {#if $todos}
-      {#each $todos.todos as todo (todo.uuid)}
-        <li class="todo-item" class:done={todo.done}>
-          <VscodeTextField inputType="text" placeholder="What needs to be done?" bind:value={todo.text}
-            ><section class="slot" slot="start"><VscodeCheckbox bind:checked={todo.done} /></section></VscodeTextField
-          >
-        </li>
-      {/each}
-    {:else}
-      <b>Get Started! Add a new Todo.</b>
-    {/if}
-  </ul>
+  <form on:submit|preventDefault={add}>
+    <ul class="todos">
+      {#if $todos}
+        {#each $todos.todos as todo, index (todo.uuid)}
+          <li class="todo-item" class:done={todo.done}>
+            <VscodeTextField
+              inputType="text"
+              placeholder="What needs to be done?"
+              bind:value={todo.text}
+              on:change={() => changed(index)}
+              on:blur={() => (blurred = `${todo.uuid} ${todo.text}`)}
+              on:focus={() => (focused = `${todo.uuid} ${todo.text}`)}
+              focus={todo.uuid === focusId}
+              ><section class="slot" slot="start"><VscodeCheckbox bind:checked={todo.done} /></section></VscodeTextField
+            >
+          </li>
+        {/each}
+      {:else}
+        <b>Get Started! Add a new Todo.</b>
+      {/if}
+    </ul>
 
-  <p>{remaining} remaining</p>
+    <p>{remaining} remaining</p>
 
-  <div class="todo-actions">
-    <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-static-element-interactions -->
-    <VscodeButton on:click={add}>Add New</VscodeButton>
+    <div class="todo-actions">
+      <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-static-element-interactions -->
+      <VscodeButton on:click={add}>Add New</VscodeButton>
 
-    <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-static-element-interactions -->
-    <VscodeButton on:click={clear}>Clear Completed</VscodeButton>
+      <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-static-element-interactions -->
+      <VscodeButton on:click={clear}>Clear Completed</VscodeButton>
 
-    <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-static-element-interactions -->
-    <VscodeButton on:click={reset}>Reset the List</VscodeButton>
-  </div>
+      <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-static-element-interactions -->
+      <VscodeButton on:click={reset}>Reset the List</VscodeButton>
+    </div>
+
+    <ul>
+      <li>Key: {key}</li>
+      <li>Focused: {focused}</li>
+      <li>Blurred: {blurred}</li>
+    </ul>
+  </form>
+
+  <pre>
+    {submitInfo}
+  </pre>
 </div>
 
 <style>

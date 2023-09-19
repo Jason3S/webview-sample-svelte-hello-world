@@ -31,7 +31,7 @@
     {#if view == 'hello-world'}
       <HelloWorld {name} />
     {:else if view == 'todo'}
-      <Todo></Todo>
+      <Todo />
     {:else}
       <h1>Unknown View {view}</h1>
     {/if}
