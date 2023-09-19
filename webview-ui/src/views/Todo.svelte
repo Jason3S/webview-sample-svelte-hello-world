@@ -4,6 +4,7 @@
   import VscodeCheckbox from '../components/VscodeCheckbox.svelte';
   import VscodeTextField from '../components/VscodeTextField.svelte';
   import { todos } from '../state/appState';
+  import type { TextInputEvent } from '../types';
 
   const api = getClientApi();
 
@@ -11,11 +12,11 @@
 
   let key: string | undefined;
 
-  let submitInfo = '';
   let focusId = 0;
 
   let focused = '';
   let blurred = '';
+  let lastInputEvent: Event | undefined;
 
   async function add() {
     if (!$todos) return;
@@ -49,12 +50,16 @@
       focusId = td.uuid;
     }
   }
+
+  function onInput(e: CustomEvent<TextInputEvent>) {
+    lastInputEvent = e.detail;
+  }
 </script>
 
 <div>
   <h1>todos</h1>
 
-  <form on:submit|preventDefault={add}>
+  <form on:submit|preventDefault>
     <ul class="todos">
       {#if $todos}
         {#each $todos.todos as todo, index (todo.uuid)}
@@ -66,6 +71,7 @@
               on:change={() => changed(index)}
               on:blur={() => (blurred = `${todo.uuid} ${todo.text}`)}
               on:focus={() => (focused = `${todo.uuid} ${todo.text}`)}
+              on:input={(e) => onInput(e)}
               focus={todo.uuid === focusId}
               ><section class="slot" slot="start"><VscodeCheckbox bind:checked={todo.done} /></section></VscodeTextField
             >
@@ -96,9 +102,7 @@
     </ul>
   </form>
 
-  <pre>
-    {submitInfo}
-  </pre>
+  <pre>{JSON.stringify(lastInputEvent, null, 2)}</pre>
 </div>
 
 <style>

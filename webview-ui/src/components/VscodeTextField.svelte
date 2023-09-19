@@ -24,7 +24,7 @@
   /** Set the focus to this element. */
   export let focus: boolean | undefined = undefined;
 
-  const dispatch = createEventDispatcher();
+  const dispatch = createEventDispatcher<{ input: TextInputEvent }>();
 
   $: extraProps = { autofocus, disabled, readonly: makeReadonly, maxlength, name, placeholder, size, type: inputType };
   $: props = Object.fromEntries(Object.entries(extraProps).filter(([_k, v]) => typeof v !== 'undefined'));
