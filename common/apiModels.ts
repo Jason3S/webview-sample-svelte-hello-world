@@ -1,3 +1,5 @@
+import { LogLevel } from './logger';
+
 export interface Todo {
   uuid: number;
   done: boolean;
@@ -6,7 +8,8 @@ export interface Todo {
 
 export type TodoList = Todo[];
 
-export interface Todos {
+export interface AppState {
   seq: number;
   todos: TodoList;
+  logLevel: LogLevel;
 }

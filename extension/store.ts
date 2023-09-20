@@ -1,13 +1,13 @@
-import { LogLevel } from 'vscode';
-import { TodoList, Todos } from '../common/apiModels';
+import { TodoList, AppState } from '../common/apiModels';
 import { ObservableValue, createStoreValue } from './ObservableValue';
+import { getLogLevel } from '../common/logger';
 
 export interface Storage {
-  todos: ObservableValue<Todos>;
+  state: ObservableValue<AppState>;
 }
 
 export const store: Storage = {
-  todos: createStoreValue({ seq: 1, todos: [] }),
+  state: createStoreValue({ seq: 1, logLevel: getLogLevel(), todos: [] }),
 };
 
 export const sampleList: TodoList = [

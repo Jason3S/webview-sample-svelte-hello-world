@@ -1,11 +1,11 @@
 import { window } from 'vscode';
 import { type MessageConnection } from 'vscode-jsonrpc/node';
 import { ServerSideApi, ServerSideApiDef, UpdateResult, createServerSideHelloWorldApi } from '../common/api';
-import { Todos } from '../common/apiModels';
+import { AppState } from '../common/apiModels';
 import { createDisposeMethodFromList, type Disposable } from '../common/disposable';
 import { log } from './logger';
 import { sampleList, store } from './store';
-import { getLogLevel, setLogLevel } from '../common/logger';
+import { setLogLevel } from '../common/logger';
 
 export function createApi(connection: MessageConnection): ServerSideApi {
   const disposables: Disposable[] = [];
@@ -14,11 +14,9 @@ export function createApi(connection: MessageConnection): ServerSideApi {
   const api: ServerSideApiDef = {
     serverRequests: {
       whatTimeIsIt,
-      updateTodos,
-      getTodos,
+      updateAppState,
+      getAppState,
       resetTodos,
-      getLogLevel: async () => getLogLevel(),
-      setLogLevel: async (level) => (typeof level === 'number' && setLogLevel(level), getLogLevel()),
     },
     serverNotifications: {
       async showInformationMessage(message) {
@@ -26,13 +24,17 @@ export function createApi(connection: MessageConnection): ServerSideApi {
       },
     },
     clientRequests: {},
-    clientNotifications: { onChangeTodos: true },
+    clientNotifications: { onChangeAppState: true },
   };
 
   const serverSideApi = createServerSideHelloWorldApi(connection, api);
   disposables.push(serverSideApi);
-
-  store.todos.subscribe((v) => serverSideApi.clientNotification.onChangeTodos(v));
+  disposables.push(
+    store.state.subscribe((v) => {
+      setLogLevel(v.logLevel);
+      serverSideApi.clientNotification.onChangeAppState(v);
+    }),
+  );
 
   return { ...serverSideApi, dispose };
 
@@ -46,10 +48,10 @@ export function createApi(connection: MessageConnection): ServerSideApi {
   /**
    * Update the todo list
    */
-  async function updateTodos(todos: Todos): Promise<UpdateResult<Todos>> {
+  async function updateAppState(todos: AppState): Promise<UpdateResult<AppState>> {
     let success = false;
 
-    function update(current: Todos): Todos {
+    function update(current: AppState): AppState {
       if (current.seq !== todos.seq) return current;
       const next = { ...todos };
       ++next.seq;
@@ -58,15 +60,15 @@ export function createApi(connection: MessageConnection): ServerSideApi {
     }
 
     log('Update Todos: %o', todos);
-    store.todos.update(update);
-    return { success, value: store.todos.value };
+    store.state.update(update);
+    return { success, value: store.state.value };
   }
 
   /**
    * Fetch the todo list
    */
-  async function getTodos() {
-    const v = store.todos.value;
+  async function getAppState() {
+    const v = store.state.value;
     log('getTodos, found: %o', v);
     return v;
   }
@@ -75,7 +77,7 @@ export function createApi(connection: MessageConnection): ServerSideApi {
    * Reset the Todo list
    */
   async function resetTodos() {
-    const current = store.todos.value;
-    updateTodos({ ...current, todos: sampleList.map((todo) => ({ ...todo })) });
+    const current = store.state.value;
+    updateAppState({ ...current, todos: sampleList.map((todo) => ({ ...todo })) });
   }
 }

@@ -19,14 +19,12 @@ function createApi(): API {
     },
     serverRequests: {
       whatTimeIsIt: true,
-      updateTodos: true,
-      getTodos: true,
+      updateAppState: true,
+      getAppState: true,
       resetTodos: true,
-      getLogLevel: true,
-      setLogLevel: true,
     },
     clientNotifications: {
-      onChangeTodos: true,
+      onChangeAppState: true,
     },
     clientRequests: {},
   });

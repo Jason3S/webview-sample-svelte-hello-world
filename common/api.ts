@@ -1,5 +1,5 @@
 import { type MessageConnection } from 'vscode-jsonrpc/lib/common/connection';
-import type { Todos } from './apiModels';
+import type { AppState } from './apiModels';
 import {
   createClientApi,
   createServerApi,
@@ -11,7 +11,6 @@ import {
   type ServerAPIDef,
   type ClientSideMethods,
 } from './json-rpc-api';
-import { LogLevel } from './logger';
 
 export interface UpdateResult<T> {
   success: boolean;
@@ -20,11 +19,9 @@ export interface UpdateResult<T> {
 
 export interface ServerRequestsAPI {
   whatTimeIsIt(): Promise<string>;
-  getTodos(): Promise<Todos>;
-  updateTodos(todos: Todos): Promise<UpdateResult<Todos>>;
+  getAppState(): Promise<AppState>;
+  updateAppState(state: AppState): Promise<UpdateResult<AppState>>;
   resetTodos(): Promise<void>;
-  getLogLevel(): Promise<LogLevel>;
-  setLogLevel(level: LogLevel): Promise<LogLevel>;
 }
 
 export interface ServerNotificationsAPI {
@@ -34,7 +31,7 @@ export interface ServerNotificationsAPI {
 export interface ClientRequestsAPI {}
 
 export interface ClientNotificationsAPI {
-  onChangeTodos: (todos: Todos) => void;
+  onChangeAppState: (state: AppState) => void;
 }
 
 export interface HelloWorldAPI extends RpcAPI {

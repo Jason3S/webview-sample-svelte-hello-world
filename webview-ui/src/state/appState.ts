@@ -1,31 +1,37 @@
-import type { Todos } from '../../../common/apiModels';
-import { log } from '../../../common/logger';
+import { derived } from 'svelte/store';
+import type { AppState } from '../../../common/apiModels';
+import { LogLevel, log, setLogLevel } from '../../../common/logger';
 import { getClientApi } from '../api';
-import { createClientServerStore } from './store';
+import { createClientServerStore, shadowStore } from './store';
 
-const csTodos = createClientServerStore<Todos>();
+setLogLevel(LogLevel.debug);
 
-export const todos = csTodos.client;
+const csAppState = createClientServerStore<AppState>({ seq: -1, todos: [], logLevel: LogLevel.none });
+
+export const appState = csAppState.client;
+export const todos = shadowStore(appState, 'todos');
 
 const api = getClientApi();
 
-// Watch for changes to be send to the server
-csTodos.server.subscribe(async (v) => {
+// Watch for changes to send to the server
+csAppState.server.subscribe(async (v) => {
   if (!v) return;
-  const result = await api.serverRequest.updateTodos(v);
-  csTodos.server.set(result.value);
+  const result = await api.serverRequest.updateAppState(v);
+  csAppState.server.set(result.value);
 });
 
-api.clientNotification.onChangeTodos.subscribe((updated) => {
-  csTodos.server.set(updated);
+// Watch for changes from the server
+api.clientNotification.onChangeAppState.subscribe((updated) => {
+  csAppState.server.set(updated);
+  setLogLevel(updated.logLevel);
 });
 
-async function initTodos() {
-  const todos = await api.serverRequest.getTodos();
-  log('initTodos %o', todos);
-  if (todos) {
-    csTodos.server.set(todos);
+async function initAppState() {
+  const state = await api.serverRequest.getAppState();
+  log('initAppState %o', state);
+  if (state) {
+    csAppState.server.set(state);
   }
 }
 
-initTodos();
+initAppState();

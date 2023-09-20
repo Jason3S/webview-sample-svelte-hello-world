@@ -1,10 +1,10 @@
 <script lang="ts">
-  import { writable } from 'svelte/store';
-  import { LogLevel, getLogLevel, setLogLevel } from '../../../common/logger';
+  import { LogLevel } from '../../../common/logger';
   import { getClientApi } from '../api';
   import VscodeButton from '../components/VscodeButton.svelte';
   import VscodeCheckbox from '../components/VscodeCheckbox.svelte';
-  import { todos } from '../state/appState';
+  import { appState, todos } from '../state/appState';
+  import { derivativeRWPassThrough } from '../state/store';
   import { vscode } from '../utilities/vscode';
   import VsCodeComponents from './VSCodeComponents.svelte';
 
@@ -13,7 +13,20 @@
 
   const api = getClientApi();
 
-  let logDebug = writable<boolean | undefined>(getLogLevel() >= LogLevel.debug);
+  let logDebug = derivativeRWPassThrough(
+    appState,
+    ($appState) => ($appState.logLevel && $appState.logLevel >= LogLevel.debug) || false,
+    ($logDebug, $appState) => {
+      $appState.logLevel = $logDebug
+        ? $appState.logLevel < LogLevel.debug
+          ? LogLevel.debug
+          : $appState.logLevel
+        : $appState.logLevel >= LogLevel.debug
+        ? LogLevel.none
+        : $appState.logLevel;
+      return $appState;
+    },
+  );
 
   let messages: string[] = [];
 
@@ -22,12 +35,6 @@
   $: {
     updateState(showVsCodeComponents);
   }
-
-  logDebug.subscribe((value) => {
-    const level = value ? LogLevel.debug : LogLevel.error;
-    api.serverRequest.setLogLevel(level);
-    setLogLevel(level);
-  });
 
   function handleHowdyClick() {
     api.serverNotification.showInformationMessage('Hey There.');
@@ -60,9 +67,9 @@
     {/each}
   </ul>
 
-  {#if $todos && $todos.todos.length}
+  {#if $todos.length}
     <ul>
-      {#each $todos.todos as todo}
+      {#each $appState.todos as todo}
         <li>{todo.text} - {todo.done}</li>
       {/each}
     </ul>

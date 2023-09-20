@@ -1,39 +1,36 @@
 <script lang="ts">
+  import type { Todo } from '../../../common/apiModels';
   import { getClientApi } from '../api';
   import VscodeButton from '../components/VscodeButton.svelte';
   import VscodeCheckbox from '../components/VscodeCheckbox.svelte';
   import VscodeTextField from '../components/VscodeTextField.svelte';
-  import { todos } from '../state/appState';
+  import { appState, todos } from '../state/appState';
   import type { TextInputEvent } from '../types';
 
   const api = getClientApi();
 
-  $: remaining = $todos?.todos.filter((t) => !t.done).length || 0;
+  $: remaining = $todos.filter((t) => !t.done).length || 0;
 
-  let key: string | undefined;
+  let focusTodo: Todo | undefined;
 
-  let focusId = 0;
-
-  let focused = '';
-  let blurred = '';
-  let lastInputEvent: Event | undefined;
+  let currTodo: Todo | undefined = undefined;
 
   async function add() {
-    if (!$todos) return;
-    const todo = {
-      uuid: Math.random() * 100000 + Date.now(),
-      done: false,
-      text: '',
-    };
-    focusId = todo.uuid;
-    $todos.todos.push(todo);
-    $todos = $todos;
+    todos.update((todos) => {
+      const todo = {
+        uuid: Math.random() * 100000 + Date.now(),
+        done: false,
+        text: '',
+      };
+      focusTodo = todo;
+      currTodo = todo;
+      todos.push(todo);
+      return todos;
+    });
   }
 
   function clear() {
-    if (!$todos) return;
-    $todos.todos = $todos.todos.filter((t) => !t.done);
-    $todos = $todos;
+    todos.update((todos) => todos.filter((t) => !t.done));
   }
 
   function reset() {
@@ -41,46 +38,48 @@
   }
 
   function changed(index: number) {
-    if (index + 1 === $todos?.todos.length) {
+    if (index + 1 === $todos.length) {
       add();
-    } else {
-      // Move to the next todo
-      const td = $todos?.todos[index + 1];
-      if (!td) return;
-      focusId = td.uuid;
     }
   }
 
-  function onInput(e: CustomEvent<TextInputEvent>) {
-    lastInputEvent = e.detail;
+  function selectTodo(todo: Todo, active: boolean) {
+    currTodo = active ? todo : currTodo === todo ? undefined : currTodo;
   }
+
+  function onInput(_e: CustomEvent<TextInputEvent>) {}
 </script>
 
 <div>
   <h1>todos</h1>
 
   <form on:submit|preventDefault>
-    <ul class="todos">
-      {#if $todos}
-        {#each $todos.todos as todo, index (todo.uuid)}
+    {#if $todos}
+      <ul class="todos">
+        {#each $todos as todo, index (todo.uuid)}
           <li class="todo-item" class:done={todo.done}>
             <VscodeTextField
               inputType="text"
               placeholder="What needs to be done?"
               bind:value={todo.text}
               on:change={() => changed(index)}
-              on:blur={() => (blurred = `${todo.uuid} ${todo.text}`)}
-              on:focus={() => (focused = `${todo.uuid} ${todo.text}`)}
+              on:blur={() => selectTodo(todo, false)}
+              on:focus={() => selectTodo(todo, true)}
               on:input={(e) => onInput(e)}
-              focus={todo.uuid === focusId}
-              ><section class="slot" slot="start"><VscodeCheckbox bind:checked={todo.done} /></section></VscodeTextField
+              focus={todo === focusTodo}
+              ><section class="slot" slot="start">
+                <VscodeCheckbox bind:checked={todo.done} on:blur={() => selectTodo(todo, false)} on:focus={() => selectTodo(todo, true)} />
+              </section></VscodeTextField
             >
+            {#if todo === currTodo}
+              <span>*</span>
+            {/if}
           </li>
         {/each}
-      {:else}
-        <b>Get Started! Add a new Todo.</b>
-      {/if}
-    </ul>
+      </ul>
+    {:else}
+      <b>Get Started! Add a new Todo.</b>
+    {/if}
 
     <p>{remaining} remaining</p>
 
@@ -94,15 +93,7 @@
       <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-static-element-interactions -->
       <VscodeButton on:click={reset}>Reset the List</VscodeButton>
     </div>
-
-    <ul>
-      <li>Key: {key}</li>
-      <li>Focused: {focused}</li>
-      <li>Blurred: {blurred}</li>
-    </ul>
   </form>
-
-  <pre>{JSON.stringify(lastInputEvent, null, 2)}</pre>
 </div>
 
 <style>

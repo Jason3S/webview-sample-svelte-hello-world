@@ -1,6 +1,6 @@
-import type { Todos } from '../../common/apiModels';
-export interface AppState {
-  todos?: Todos;
+import type { AppState } from '../../common/apiModels';
+export interface WebViewState {
+  todos?: AppState;
   showVsCodeComponents?: boolean;
 }
 
