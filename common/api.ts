@@ -18,14 +18,14 @@ export interface UpdateResult<T> {
 }
 
 export interface ServerRequestsAPI {
-  whatTimeIsIt(): Promise<string>;
-  getAppState(): Promise<AppState>;
-  updateAppState(state: AppState): Promise<UpdateResult<AppState>>;
-  resetTodos(): Promise<void>;
+  whatTimeIsIt(): string;
+  getAppState(): AppState;
+  updateAppState(state: AppState): UpdateResult<AppState>;
+  resetTodos(): void;
 }
 
 export interface ServerNotificationsAPI {
-  showInformationMessage(message: string): Promise<void>;
+  showInformationMessage(message: string): void;
 }
 
 export interface ClientRequestsAPI {}
