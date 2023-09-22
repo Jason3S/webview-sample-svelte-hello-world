@@ -1,7 +1,7 @@
 import { type MessageConnection, NotificationType, RequestType } from 'vscode-jsonrpc/lib/common/api';
 import { createDisposable, createDisposeMethodFromList, type Disposable, injectDisposable } from './disposable';
 import { log } from './logger';
-import { AsyncFunc, AsyncFuncVoid, Func, FuncVoid, KeepFieldsOfType, MakeMethodsAsync, ReturnPromise } from './types';
+import type { AsyncFunc, AsyncFuncVoid, Func, FuncVoid, KeepFieldsOfType, MakeMethodsAsync, ReturnPromise } from './types';
 
 export const apiPrefix = {
   serverRequest: 'sr_',
