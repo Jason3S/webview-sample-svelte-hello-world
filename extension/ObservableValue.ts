@@ -1,4 +1,4 @@
-import { createDisposable, type Disposable } from '../common/disposable';
+import { createDisposable, type DisposableHybrid as Disposable } from '../common/disposable';
 import { deepEqual } from '../external/deepEqual';
 
 export interface ObservableValue<T> {

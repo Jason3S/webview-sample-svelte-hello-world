@@ -1,5 +1,5 @@
-import { type MessageConnection, NotificationType, RequestType } from 'vscode-jsonrpc/lib/common/api';
-import { createDisposable, createDisposeMethodFromList, type Disposable, injectDisposable } from './disposable';
+import { NotificationType, RequestType, type MessageConnection } from 'vscode-jsonrpc/lib/common/api';
+import { type DisposableHybrid, createDisposable, createDisposeMethodFromList, injectDisposable, type DisposableLike } from './disposable';
 import { log } from './logger';
 import type { AsyncFunc, AsyncFuncVoid, Func, FuncVoid, KeepFieldsOfType, MakeMethodsAsync, ReturnPromise } from './types';
 
@@ -12,11 +12,7 @@ export const apiPrefix = {
 
 type CallBack = Func;
 
-type RequestCallBack = AsyncFunc;
-
 export type Requests<T = {}> = KeepFieldsOfType<T, Func | AsyncFunc>;
-
-type NotificationCallBack = AsyncFuncVoid;
 
 export type Notifications<T = {}> = KeepFieldsOfType<T, FuncVoid | AsyncFuncVoid>;
 
@@ -69,14 +65,14 @@ export type ServerSideMethods<T extends RpcAPI> = {
   clientNotification: MakeMethodsAsync<ClientNotifications<T>>;
   serverRequest: WrapInSubscribable<ServerRequests<T>>;
   serverNotification: WrapInSubscribable<ServerNotifications<T>>;
-} & Disposable;
+} & DisposableHybrid;
 
 export type ClientSideMethods<T extends RpcAPI> = {
   clientRequest: WrapInSubscribable<ClientRequests<T>>;
   clientNotification: WrapInSubscribable<ClientNotifications<T>>;
   serverRequest: MakeMethodsAsync<ServerRequests<T>>;
   serverNotification: MakeMethodsAsync<ServerNotifications<T>>;
-} & Disposable;
+} & DisposableHybrid;
 
 type DefUseAPI<T> = {
   [P in keyof T]: true;
@@ -164,7 +160,12 @@ export function createClientApi<API extends RpcAPI>(connection: MessageConnectio
   );
 }
 
-function bindRequests<T>(connection: MessageConnection, prefix: string, requests: WrapInPubSub<Requests<T>>, disposables: Disposable[]) {
+function bindRequests<T>(
+  connection: MessageConnection,
+  prefix: string,
+  requests: WrapInPubSub<Requests<T>>,
+  disposables: DisposableLike[],
+) {
   for (const [name, pubSub] of Object.entries(requests)) {
     log('bindRequest %o', { name, fn: typeof pubSub });
     if (!pubSub) continue;
@@ -178,7 +179,7 @@ function bindNotifications(
   connection: MessageConnection,
   prefix: string,
   requests: WrapInPubSub<Notifications>,
-  disposables: Disposable[],
+  disposables: DisposableLike[],
 ) {
   for (const [name, pubSub] of Object.entries(requests)) {
     log('bindNotifications %o', { name, fn: typeof pubSub });
@@ -252,7 +253,7 @@ function createPubMultipleSubscribers<Subscriber extends ((...args: any) => void
     }
   }
 
-  function subscribe(s: Subscriber): Disposable {
+  function subscribe(s: Subscriber): DisposableHybrid {
     log(`subscribe to ${name} %o`, s);
     subscribers.add(s);
     return createDisposable(() => subscribers.delete(s));
@@ -269,7 +270,7 @@ function createPubSingleSubscriber<Subscriber extends (...args: any) => any>(nam
     return await subscriber?.(...arguments);
   }
 
-  function subscribe(s: Subscriber): Disposable {
+  function subscribe(s: Subscriber): DisposableHybrid {
     subscriber = s;
     log(`subscribe to ${name} %o`, s);
     return createDisposable(() => {

@@ -2,13 +2,13 @@ import { window } from 'vscode';
 import { type MessageConnection } from 'vscode-jsonrpc/node';
 import { ServerSideApi, ServerSideApiDef, UpdateResult, createServerSideHelloWorldApi } from '../common/api';
 import { AppState } from '../common/apiModels';
-import { createDisposeMethodFromList, type Disposable } from '../common/disposable';
+import { createDisposeMethodFromList, injectDisposable, type DisposableLike } from '../common/disposable';
 import { log } from './logger';
 import { sampleList, store } from './store';
 import { setLogLevel } from '../common/logger';
 
 export function createApi(connection: MessageConnection): ServerSideApi {
-  const disposables: Disposable[] = [];
+  const disposables: DisposableLike[] = [];
   const dispose = createDisposeMethodFromList(disposables);
 
   const api: ServerSideApiDef = {
@@ -36,7 +36,7 @@ export function createApi(connection: MessageConnection): ServerSideApi {
     }),
   );
 
-  return { ...serverSideApi, dispose };
+  return injectDisposable({ ...serverSideApi }, dispose);
 
   /**
    * Get the time

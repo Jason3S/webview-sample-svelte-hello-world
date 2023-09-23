@@ -1,0 +1,13 @@
+ignorePaths:
+  - webview-ui/public/build
+  - out
+  - webview-ui/public/assets
+  - '*.svg'
+words:
+  - codicon
+  - codicons
+  - degit
+  - iife
+  - sirv
+  - Todos
+  - tsbuildinfo
